@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class Tweet {
+public class Tweet implements Comparable{
 
 	@Id
 	@GeneratedValue
@@ -91,7 +91,15 @@ public class Tweet {
 			return false;
 		return true;
 	}
+	@Override
+	public int compareTo(Object other) {
+
+		return compareTweets((Tweet)other);
+	}
 	
-	
+	public int compareTweets(Tweet other)
+	{
+		return this.timestamp.compareTo(other.getTimestamp());
+	}
 	
 }

@@ -1,5 +1,7 @@
 package com.cooksys.Tweeter.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cooksys.Tweeter.dto.TweetDto;
 import com.cooksys.Tweeter.service.TweetService;
 import com.cooksys.Tweeter.entity.Credentials;
+import com.cooksys.Tweeter.entity.TweetContext;
 
 @RestController
 @RequestMapping("tweet")
@@ -50,13 +53,13 @@ public class TweetController {
 		return null;
 	}
 	
-	@GetMapping
+	@GetMapping("tweets")
 	public List<TweetDto> getAllTweets()
 	{
 		return tweetService.getAll();
 	}
 	
-	@PostMapping
+	@PostMapping("tweets")
 	public TweetDto postTweet(@RequestBody TweetDto tweet)
 	{
 		return null;
@@ -92,6 +95,56 @@ public class TweetController {
 		return null;
 	}
 	
+	@GetMapping("tweets/{id}/context")
+	public TweetContext getContextOf(@PathVariable Integer id)
+	{
+		TweetDto start = tweetService.get(id);
+		TweetContext context = new TweetContext(start);
+		List<TweetDto> before = new ArrayList<TweetDto>();
+		List<TweetDto> after = new ArrayList<TweetDto>();
+		
+		List<TweetDto> tweetList = tweetService.getAllChronological();
+		before = getParentTweets(start,tweetList.subList(0,tweetList.indexOf(start)));
+		after = getChildTweets(start,tweetList.subList(tweetList.indexOf(start),tweetList.size()));
+		
+		context.setBefore(before);
+		context.setAfter(after);
+
+		return context;
+	}
+	
+	private List<TweetDto> getParentTweets(TweetDto start,List<TweetDto> listSegment)
+	{
+		for(int i = listSegment.size()-1; i>=0; i--)
+		{
+			
+		}
+		return null;
+	}
+	
+	private List<TweetDto> getChildTweets(TweetDto start,List<TweetDto> listSegment)
+	{	
+		List<TweetDto> list = new ArrayList<TweetDto>();
+		TweetDto newStart = listSegment.get(listSegment.size()-1);
+		
+		if(listSegment.size() == 0)
+			return list;
+		
+		for(TweetDto t: listSegment)
+		{
+			if(tweetService.areParentChild(start,t));
+			{
+				newStart = t;
+				list.add(newStart);
+				break;
+			}
+		}
+		
+		list.addAll(getChildTweets(newStart,listSegment.subList(listSegment.indexOf(newStart), listSegment.size())));
+		
+		return list;
+	}
+	
 	@GetMapping("tweets/{id}/replies")
 	public List<TweetDto> getDirectReplies(@PathVariable Integer id)
 	{
@@ -103,4 +156,6 @@ public class TweetController {
 	{
 		return null;
 	}
+	
+	
 }

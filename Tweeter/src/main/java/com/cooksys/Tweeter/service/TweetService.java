@@ -1,6 +1,7 @@
 package com.cooksys.Tweeter.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -33,6 +34,26 @@ public class TweetService {
 		return tweets;
 	}
 	
+	public List<TweetDto> getAllChronological()
+	{
+		List<Tweet> tweets = new ArrayList<Tweet>();
+		List<TweetDto> tweetsDto = new ArrayList<TweetDto>();
+		
+		for(Tweet t: tweetRepo.getAllTweets())
+		{
+			tweets.add(t);
+		}
+		
+		Collections.sort(tweets);
+		
+		for(Tweet t: tweets)
+		{
+			tweetsDto.add(tweetMapper.toDto(t));
+		}
+		
+		return tweetsDto;
+	}
+	
 	public TweetDto get(Integer id)
 	{
 		return tweetMapper.toDto(tweetRepo.get(id));
@@ -41,6 +62,15 @@ public class TweetService {
 	public TweetDto create(TweetDto tweet)
 	{
 		return tweetMapper.toDto(tweetRepo.create(tweetMapper.fromDto(tweet)));
+	}
+
+	public boolean areParentChild(TweetDto parentDto, TweetDto childDto) {
+		
+		Tweet parent = tweetMapper.fromDto(parentDto);
+		Tweet child = tweetMapper.fromDto(childDto);
+		if(child.getInReplyTo().equals(parent))
+			return true;
+		return false;
 	}
 
 }

@@ -40,7 +40,7 @@ public class UserController
 		return false;
 	}
 	
-	@GetMapping
+	@GetMapping("users")
 	public List<UserDto> getActiveUsers()
 	{
 		List<UserDto> users = new ArrayList<UserDto>();
@@ -54,7 +54,7 @@ public class UserController
 		return users;
 	}
 	
-	@PostMapping
+	@PostMapping("users")
 	public UserDto postUser(@RequestBody Credentials credentials,@RequestBody UserDto user)
 	{
 		return null;
