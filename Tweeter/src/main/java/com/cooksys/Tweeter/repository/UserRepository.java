@@ -1,5 +1,7 @@
 package com.cooksys.Tweeter.repository;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
@@ -20,6 +22,11 @@ public class UserRepository {
 	public User get(Integer id)
 	{
 		return entityManager.find(User.class,id);
+	}
+	
+	public List<User> getAllUsers()
+	{
+		return entityManager.createQuery("FIND User",User.class).getResultList();
 	}
 	
 	@Transactional

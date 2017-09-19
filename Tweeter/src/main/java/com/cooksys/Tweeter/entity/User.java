@@ -6,14 +6,18 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 public class User {
 
-	@Column(unique = true,nullable = false)
-	private String username;
+	@Id
+	@GeneratedValue
+	private Integer userID;
 	
-	private String password;
+	@Embedded
+	private Credentials credentials;
 	
 	@Embedded
 	private Profile profile;
@@ -29,22 +33,23 @@ public class User {
 	
 	public User(String username,Profile profile)
 	{
-		this.username = username;
+		credentials.setUsername(username);
 		this.profile = profile;
 		this.joined = new Timestamp(System.currentTimeMillis());
+		this.active = true;
 	}
 	
 	public String getUsername() {
-		return username;
+		return credentials.getUsername();
 	}
 	public void setUsername(String username) {
-		this.username = username;
+		credentials.setUsername(username); 
 	}
 	public String getPassword() {
-		return password;
+		return credentials.getPassword();
 	}
 	public void setPassword(String password) {
-		this.password = password;
+		credentials.setPassword(password);;
 	}
 	public Profile getProfile() {
 		return profile;
@@ -66,13 +71,15 @@ public class User {
 	{
 		this.active = active;
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		result = prime * result + ((userID == null) ? 0 : userID.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -82,57 +89,16 @@ public class User {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		if (username == null) {
-			if (other.username != null)
+		if (userID == null) {
+			if (other.userID != null)
 				return false;
-		} else if (!username.equals(other.username))
+		} else if (!userID.equals(other.userID))
 			return false;
 		return true;
 	}
-}
-
-@Embeddable
-class Profile
-{
-	String firstName;
-	
-	String lastName;
-	
-	@Column(nullable = false, unique = true)
-	String email;
-	
-	String phoneNum;
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPhoneNum() {
-		return phoneNum;
-	}
-
-	public void setPhoneNum(String phoneNum) {
-		this.phoneNum = phoneNum;
-	}
 	
 }
+
+
+
+

@@ -2,10 +2,21 @@ package com.cooksys.Tweeter.entity;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Hashtag {
 
+	@Id
+	@GeneratedValue
+	private Integer hashtagID;
+	
 	private String label;
+	
 	private Timestamp firstUsed;
+	
 	private Timestamp lastUpdated;
 	
 	public Hashtag()
@@ -38,13 +49,15 @@ public class Hashtag {
 	public void setLastUpdated(Timestamp lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((label == null) ? 0 : label.hashCode());
+		result = prime * result + ((hashtagID == null) ? 0 : hashtagID.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -54,11 +67,12 @@ public class Hashtag {
 		if (getClass() != obj.getClass())
 			return false;
 		Hashtag other = (Hashtag) obj;
-		if (label == null) {
-			if (other.label != null)
+		if (hashtagID == null) {
+			if (other.hashtagID != null)
 				return false;
-		} else if (!label.equals(other.label))
+		} else if (!hashtagID.equals(other.hashtagID))
 			return false;
 		return true;
 	}
+	
 }

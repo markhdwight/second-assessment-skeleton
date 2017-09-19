@@ -1,5 +1,7 @@
 package com.cooksys.Tweeter.repository;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
@@ -27,5 +29,10 @@ public class HashtagRepository {
 	{
 		entityManager.persist(hashtag);
 		return hashtag;
+	}
+
+	public List<Hashtag> getAllHashtags() {
+
+		return entityManager.createQuery("FROM Hashtag",Hashtag.class).getResultList();
 	}
 }
