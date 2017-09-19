@@ -80,10 +80,32 @@ public class UserController
 	}
 	
 	@PostMapping("users/@{username}/follow")
-	public void follow(@RequestBody Credentials credentials @PathVariable String username)
+	public void follow(@RequestBody Credentials credentials, @PathVariable String username)
 	{
 		
 	}
 	
+	@PostMapping("users/@{username}/unfollow")
+	public void unfollow(@RequestBody Credentials credentials, @PathVariable String username)
+	{
+		
+	}
 	
+	@GetMapping("users/@{username}/followers")
+	public List<UserDto> getFollowers(@PathVariable String username)
+	{
+		return null;
+	}
+	
+	@GetMapping("tweets/{id}/likes")
+	public List<UserDto> getWhoLikes(@PathVariable Integer id)
+	{
+		return null;
+	}
+	
+	@GetMapping("tweets/{id}/mentions")
+	public List<UserDto> getThoseMentionedIn(@PathVariable Integer id)
+	{
+		return null;
+	}
 }
