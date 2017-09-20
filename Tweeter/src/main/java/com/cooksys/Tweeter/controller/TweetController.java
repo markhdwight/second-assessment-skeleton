@@ -128,9 +128,10 @@ public class TweetController {
 	}
 	
 	@PostMapping("tweets/{id}/like")
-	public void likeTweetById(@RequestBody Credentials credentials, @PathVariable Integer id)
+	public void likeTweetById(@RequestBody Credentials credentials, @PathVariable Integer id, HttpServletResponse response)
 	{
-		
+		//TODO
+		int userId = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
 	}
 	
 	@PostMapping("tweets/{id}/reply")

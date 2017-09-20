@@ -24,15 +24,13 @@ public class TweetService {
 	private TweetRepository tweetRepo;
 	private TweetJpaRepository tweetJpaRepo;
 	private HashtagRepository hashtagRepo;
-	private HashtagJpaRepository hashtagJpaRepo;
 	private TweetMapper tweetMapper;
 	
-	public TweetService(TweetRepository tweetRepo,TweetMapper tweetMapper,HashtagRepository hashtagRepo,HashtagJpaRepository hashtagJpaRepo)
+	public TweetService(TweetRepository tweetRepo,TweetMapper tweetMapper,HashtagRepository hashtagRepo)
 	{
 		this.tweetRepo = tweetRepo;
 		this.tweetMapper = tweetMapper;
 		this.hashtagRepo = hashtagRepo;
-		this.hashtagJpaRepo = hashtagJpaRepo;
 	}
 	
 	public List<TweetDto> getAll()

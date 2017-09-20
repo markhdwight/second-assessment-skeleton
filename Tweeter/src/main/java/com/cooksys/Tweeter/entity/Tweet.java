@@ -27,6 +27,8 @@ public class Tweet implements Comparable{
 	
 	private boolean active;
 	
+	private List<TweeterUser> likes;
+	
 	public Tweet()
 	{
 		
@@ -81,6 +83,20 @@ public class Tweet implements Comparable{
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+	
+	public List<TweeterUser> getLikes() {
+		return likes;
+	}
+
+	public void setLikes(List<TweeterUser> likes) {
+		this.likes = likes;
+	}
+	
+	public void likedBy(TweeterUser dude)
+	{
+		likes.add(dude);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
