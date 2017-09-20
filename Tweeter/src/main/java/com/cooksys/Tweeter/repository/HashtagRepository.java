@@ -30,6 +30,13 @@ public class HashtagRepository {
 		entityManager.persist(hashtag);
 		return hashtag;
 	}
+	
+	@Transactional
+	public Hashtag update(Hashtag hashtag)
+	{
+		entityManager.merge(hashtag);
+		return hashtag;
+	}
 
 	public List<Hashtag> getAllHashtags() {
 

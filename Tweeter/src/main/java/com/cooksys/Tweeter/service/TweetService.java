@@ -1,5 +1,6 @@
 package com.cooksys.Tweeter.service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,9 +8,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.Tweeter.mapper.TweetMapper;
+import com.cooksys.Tweeter.repository.HashtagRepository;
 import com.cooksys.Tweeter.repository.TweetJpaRepository;
 import com.cooksys.Tweeter.repository.TweetRepository;
 import com.cooksys.Tweeter.dto.TweetDto;
+import com.cooksys.Tweeter.entity.Hashtag;
 import com.cooksys.Tweeter.entity.Tweet;
 
 @Service
@@ -17,6 +20,7 @@ public class TweetService {
 	
 	private TweetRepository tweetRepo;
 	private TweetJpaRepository tweetJpaRepo;
+	private HashtagRepository hashtagRepo;
 	private TweetMapper tweetMapper;
 	
 	public TweetService(TweetRepository tweetRepo,TweetMapper tweetMapper)
@@ -84,26 +88,35 @@ public class TweetService {
 		
 		return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingOrderByTimestampDesc("@"+username));
 		
-//		List<TweetDto> tweets = new ArrayList<TweetDto>();
-//		
-//		for(Tweet t: tweetRepo.getAllTweets())
-//		{
-//			if(t.getContent().contains("@"))
-//			{
-//				String[] contents = t.getContent().split("@");
-//				
-//				for(String s : contents)
-//				{
-//					if(s.split(" ")[0].equals(label))
-//					{
-//						tweets.add(tweetMapper.toDto(t));
-//						break;
-//					}
-//				}
-//			}
-//		}
-//		
-//		return tweets;
+	}
+
+	public TweetDto create(String content, String username) {
+		
+		Tweet tweet = new Tweet(username,content);
+		List<Hashtag> masterTagList = hashtagRepo.getAllHashtags();
+		List<Hashtag> tagList = tweet.getHashTags();
+		boolean tagExists;
+		
+		tweetRepo.create(tweet);
+		
+		for(Hashtag h : tagList)
+		{
+			tagExists = false;
+			
+			for(int i = 0; i<masterTagList.size(); i++)
+			{
+				if(masterTagList.get(i).getLabel().equals(h.getLabel()))
+				{
+					h.setLastUpdated(new Timestamp(System.currentTimeMillis()));
+					hashtagRepo.update(h);
+					tagExists = true;
+				}
+			}
+			if(!tagExists)
+				hashtagRepo.create(h);
+		}
+		
+		return tweetMapper.toDto(tweet);
 	}
 
 }

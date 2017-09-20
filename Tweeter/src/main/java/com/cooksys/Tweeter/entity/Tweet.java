@@ -1,6 +1,8 @@
 package com.cooksys.Tweeter.entity;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,6 +26,17 @@ public class Tweet implements Comparable{
 	private Tweet repostOf;
 	
 	private boolean active;
+	
+	public Tweet()
+	{
+		
+	}
+	
+	public Tweet(String author,String content)
+	{
+		this.author = author;
+		this.content = content;
+	}
 	
 	public Integer getTweetId() {
 		return tweetId;
@@ -100,6 +113,21 @@ public class Tweet implements Comparable{
 	public int compareTweets(Tweet other)
 	{
 		return this.timestamp.compareTo(other.getTimestamp());
+	}
+
+	public List<Hashtag> getHashTags() {
+
+		List<Hashtag> tags = new ArrayList<Hashtag>();
+		
+		for(String s : content.split(" "))
+		{
+			if(s.charAt(0) == '#')
+			{	
+				tags.add(new Hashtag(s.substring(1)));
+			}
+		}
+		
+		return tags;
 	}
 	
 }

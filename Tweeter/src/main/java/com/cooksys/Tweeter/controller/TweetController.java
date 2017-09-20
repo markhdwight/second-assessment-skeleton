@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.Tweeter.dto.TweetDto;
 import com.cooksys.Tweeter.service.TweetService;
+import com.cooksys.Tweeter.service.TweeterUserService;
 import com.cooksys.Tweeter.entity.Credentials;
 import com.cooksys.Tweeter.entity.TweetContext;
 
@@ -23,8 +26,9 @@ import com.cooksys.Tweeter.entity.TweetContext;
 public class TweetController {
 
 	private TweetService tweetService;
+	private TweeterUserService userService;
 	
-	public TweetController(TweetService tweetService)
+	public TweetController(TweetService tweetService,TweeterUserService userService)
 	{
 		this.tweetService = tweetService;
 	}
@@ -60,8 +64,15 @@ public class TweetController {
 	}
 	
 	@PostMapping("tweets")
-	public TweetDto postTweet(@RequestBody String content, @RequestBody Credentials credentials)
+	public TweetDto postTweet(@RequestBody String content, @RequestBody Credentials credentials,HttpServletResponse response)
 	{
+		int id = userService.verifyUser(credentials.getUsername(), credentials.getPassword());
+		
+		if(id > 0 && userService.isActiveUser(userService.get(id)))
+		{
+			return tweetService.create(content,credentials.getUsername());
+		}
+		
 		return null;
 	}
 	
