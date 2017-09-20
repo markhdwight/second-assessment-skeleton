@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.Tweeter.dto.HashtagDto;
 import com.cooksys.Tweeter.dto.TweetDto;
+import com.cooksys.Tweeter.service.HashtagService;
 import com.cooksys.Tweeter.service.TweetService;
 import com.cooksys.Tweeter.service.TweeterUserService;
 import com.cooksys.Tweeter.entity.Credentials;
@@ -27,22 +29,34 @@ public class TweetController {
 
 	private TweetService tweetService;
 	private TweeterUserService userService;
+	private HashtagService hashtagService;
 	
-	public TweetController(TweetService tweetService,TweeterUserService userService)
+	public TweetController(TweetService tweetService,TweeterUserService userService,HashtagService hashtagService)
 	{
 		this.tweetService = tweetService;
+		this.userService = userService;
+		this.hashtagService = hashtagService;
 	}
 	
 	@GetMapping("users/@{username}/feed")
-	public List<TweetDto> getFeed(@PathVariable String username)
+	public List<TweetDto> getFeed(@PathVariable String username, HttpServletResponse response)
 	{
 		return null;
 	}
 	
 	@GetMapping("users/@{username}/tweets")
-	public List<TweetDto> getTweets(@PathVariable String username)
+	public List<TweetDto> getTweets(@PathVariable String username, HttpServletResponse response)
 	{
-		return null;
+		List<TweetDto> tweets = tweetService.getTweetsBy(username);
+		
+		if(!userService.exists(username))
+		{
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return null;
+		}
+		else response.setStatus(HttpServletResponse.SC_FOUND);
+		
+		return tweets;
 	}
 	
 	@GetMapping("users/@{username}/mentions")
@@ -70,21 +84,46 @@ public class TweetController {
 		
 		if(id > 0 && userService.isActiveUser(userService.get(id)))
 		{
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
 			return tweetService.create(content,credentials.getUsername());
 		}
 		
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		return null;
 	}
 	
 	@GetMapping("tweets/{id}")
-	public TweetDto getTweetById(@PathVariable Integer id)
+	public TweetDto getTweetById(@PathVariable Integer id,HttpServletResponse response)
 	{
-		return null;
+		TweetDto tweet = tweetService.get(id);
+		
+		if(!tweet.equals(null) && tweet.isActive())
+			response.setStatus(HttpServletResponse.SC_FOUND);
+		else response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		
+		return tweet;
 	}
 	
 	@DeleteMapping("tweets/{id}")
-	public TweetDto removeTweetById(@RequestBody Credentials credentials,@PathVariable Integer id)
+	public TweetDto removeTweetById(@RequestBody Credentials credentials,@PathVariable Integer id,HttpServletResponse response)
 	{
+		int userId = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
+		
+		if(userId > 0)
+		{
+			TweetDto tweet = tweetService.get(id);
+			
+			if(tweet.equals(null))
+			{
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				return tweet;
+			}
+			
+			response.setStatus(HttpServletResponse.SC_FOUND);
+			return tweetService.deactivate(id);
+		}
+		
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		return null;
 	}
 	
@@ -95,14 +134,42 @@ public class TweetController {
 	}
 	
 	@PostMapping("tweets/{id}/reply")
-	public TweetDto replyById(@RequestBody Credentials credentials, @PathVariable Integer id)
+	public TweetDto replyById(@RequestBody String content, @RequestBody Credentials credentials, @PathVariable Integer id, HttpServletResponse response)
 	{
+		int userId = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
+		
+		if(userId > 0 && !content.isEmpty())
+		{
+			TweetDto reply = tweetService.createReply(credentials.getUsername(),id,content);
+			
+			if(reply.equals(null))
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			else response.setStatus(HttpServletResponse.SC_FOUND);
+			
+			return reply;
+		}
+		
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		return null;
 	}
 	
 	@PostMapping("tweets/{id}/repost")
-	public TweetDto repostById(@RequestBody Credentials credentials, @PathVariable Integer id)
+	public TweetDto repostById(@RequestBody Credentials credentials, @PathVariable Integer id, HttpServletResponse response)
 	{
+		int userId = userService.verifyUser(credentials.getUsername(), credentials.getPassword());
+		
+		if(userId > 0)
+		{
+			TweetDto repost = tweetService.createRepost(credentials.getUsername(),id);
+			
+			if(repost.equals(null))
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			else response.setStatus(HttpServletResponse.SC_FOUND);
+			
+			return repost;
+		}
+		
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		return null;
 	}
 	
@@ -173,16 +240,53 @@ public class TweetController {
 	}
 	
 	@GetMapping("tweets/{id}/replies")
-	public List<TweetDto> getDirectReplies(@PathVariable Integer id)
+	public List<TweetDto> getDirectReplies(@PathVariable Integer id, HttpServletResponse response)
 	{
-		return null;
+		List<TweetDto> replies = tweetService.getRepliesOf(id);
+		
+		if(replies.equals(null))
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		else response.setStatus(HttpServletResponse.SC_FOUND);
+		
+		return replies;
 	}
 	
 	@GetMapping("tweets/{id}/reposts")
-	public List<TweetDto> getDirectReposts(@PathVariable Integer id)
+	public List<TweetDto> getDirectReposts(@PathVariable Integer id, HttpServletResponse response)
 	{
+		List<TweetDto> reposts = tweetService.getRepostsOf(id);
+		
+		if(reposts.equals(null))
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		else response.setStatus(HttpServletResponse.SC_FOUND);
+		
+		return reposts;
+	}
+	
+	@GetMapping("tags/{label}")
+	public List<TweetDto> getTweetsTagged(@PathVariable String label, HttpServletResponse response)
+	{
+		if(hashtagService.exists(label))
+		{
+			response.setStatus(HttpServletResponse.SC_FOUND);
+			return tweetService.getTaggedTweets(label);
+		}
+		
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;
 	}
 	
-	
+
+	@GetMapping("tweets/{id}/tags")
+	public List<HashtagDto> getHashtagsInMessage(@PathVariable Integer id, HttpServletResponse response)
+	{
+		if(tweetService.exists(id))
+		{
+			response.setStatus(HttpServletResponse.SC_FOUND);
+			return hashtagService.getTagsIn(id);
+		}
+		
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		return null;
+	}
 }

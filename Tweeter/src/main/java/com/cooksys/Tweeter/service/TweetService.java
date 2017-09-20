@@ -8,12 +8,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.Tweeter.mapper.TweetMapper;
+import com.cooksys.Tweeter.repository.HashtagJpaRepository;
 import com.cooksys.Tweeter.repository.HashtagRepository;
 import com.cooksys.Tweeter.repository.TweetJpaRepository;
 import com.cooksys.Tweeter.repository.TweetRepository;
+import com.cooksys.Tweeter.dto.HashtagDto;
 import com.cooksys.Tweeter.dto.TweetDto;
 import com.cooksys.Tweeter.entity.Hashtag;
 import com.cooksys.Tweeter.entity.Tweet;
+import com.cooksys.Tweeter.entity.TweeterUser;
 
 @Service
 public class TweetService {
@@ -21,12 +24,15 @@ public class TweetService {
 	private TweetRepository tweetRepo;
 	private TweetJpaRepository tweetJpaRepo;
 	private HashtagRepository hashtagRepo;
+	private HashtagJpaRepository hashtagJpaRepo;
 	private TweetMapper tweetMapper;
 	
-	public TweetService(TweetRepository tweetRepo,TweetMapper tweetMapper)
+	public TweetService(TweetRepository tweetRepo,TweetMapper tweetMapper,HashtagRepository hashtagRepo,HashtagJpaRepository hashtagJpaRepo)
 	{
 		this.tweetRepo = tweetRepo;
 		this.tweetMapper = tweetMapper;
+		this.hashtagRepo = hashtagRepo;
+		this.hashtagJpaRepo = hashtagJpaRepo;
 	}
 	
 	public List<TweetDto> getAll()
@@ -60,9 +66,24 @@ public class TweetService {
 		return tweetsDto;
 	}
 	
+	public List<TweetDto> getTweetsBy(String username) {
+
+		return tweetMapper.toDtos(tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(username));
+	}
+	
 	public TweetDto get(Integer id)
 	{
 		return tweetMapper.toDto(tweetRepo.get(id));
+	}
+	
+
+	public boolean exists(Integer id) {
+		for(Tweet t: tweetRepo.getAllTweets())
+		{
+			if(t.getTweetId() == id)
+				return true;
+		}
+		return false;
 	}
 	
 	public TweetDto create(TweetDto tweet)
@@ -81,23 +102,50 @@ public class TweetService {
 
 	public List<TweetDto> getTaggedTweets(String label) {
 		
-		return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingOrderByTimestampDesc("#"+label));
+		return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingAndActiveTrueOrderByTimestampDesc("#"+label));
 	}
 
 	public List<TweetDto> getMentions(String username) {
 		
-		return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingOrderByTimestampDesc("@"+username));
+		return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingAndActiveTrueOrderByTimestampDesc("@"+username));
 		
 	}
 
 	public TweetDto create(String content, String username) {
 		
 		Tweet tweet = new Tweet(username,content);
+		
+		tweetRepo.create(tweet);
+		
+		updateHashtags(tweet);
+		
+		return tweetMapper.toDto(tweet);
+	}
+	
+	public TweetDto createReply(String username, Integer id, String content) {
+
+		Tweet tweet = tweetRepo.get(id);
+		
+		if(tweet.equals(null))
+		{
+			return null;
+		}
+		
+		Tweet reply = new Tweet(username,content);
+		reply.setInReplyTo(tweet);
+		
+		tweetRepo.create(tweet);
+		
+		updateHashtags(tweet);
+		
+		return tweetMapper.toDto(reply);
+	}
+	
+	private void updateHashtags(Tweet tweet)
+	{
 		List<Hashtag> masterTagList = hashtagRepo.getAllHashtags();
 		List<Hashtag> tagList = tweet.getHashTags();
 		boolean tagExists;
-		
-		tweetRepo.create(tweet);
 		
 		for(Hashtag h : tagList)
 		{
@@ -115,8 +163,58 @@ public class TweetService {
 			if(!tagExists)
 				hashtagRepo.create(h);
 		}
+	}
+	
+	public TweetDto createRepost(String username, Integer id) {
+
+		Tweet tweet = tweetRepo.get(id);
 		
+		if(tweet.equals(null))
+		{
+			return null;
+		}
+		
+		Tweet repost = new Tweet(username,"");
+		repost.setRepostOf(tweet);
+		
+		tweetRepo.create(repost);
+		
+		return tweetMapper.toDto(repost);
+	}
+	
+	public TweetDto activate(Integer id)
+	{
+		Tweet tweet = tweetRepo.get(id);
+		tweet.setActive(true);
+		tweetRepo.update(tweet);
 		return tweetMapper.toDto(tweet);
 	}
 
+	public TweetDto deactivate(Integer id) {
+
+		Tweet tweet = tweetRepo.get(id);
+		tweet.setActive(false);
+		tweetRepo.update(tweet);
+		return tweetMapper.toDto(tweet);
+	}
+
+	public List<TweetDto> getRepliesOf(Integer id) {
+
+		Tweet tweet = tweetRepo.get(id);
+		
+		if(tweet.equals(null) || !tweet.isActive())
+			return null;
+		
+		return tweetMapper.toDtos(tweetJpaRepo.findByInReplyToAndActiveTrue(tweet));
+	}
+	
+	public List<TweetDto> getRepostsOf(Integer id)
+	{
+		Tweet tweet = tweetRepo.get(id);
+		
+		if(tweet.equals(null) || !tweet.isActive())
+			return null;
+		
+		return tweetMapper.toDtos(tweetJpaRepo.findByRepostOfAndActiveTrue(tweet));
+	}
 }

@@ -69,7 +69,7 @@ public class TweeterUserService
 		
 		for(TweeterUser u: userRepo.getAllUsers())
 		{
-			if(u.getUsername().equals(username));
+			if(u.getUsername().equals(username) && u.isActive());
 				return true;
 		}
 		return false;
@@ -88,7 +88,7 @@ public class TweeterUserService
 	{	
 		for(TweeterUser u: userRepo.getAllUsers())
 		{
-			if(u.getUsername().equals(username) && u.getPassword().equals(password));
+			if(u.getUsername().equals(username) && u.getPassword().equals(password) && u.isActive())
 				return u.getUserId();
 		}
 		return -1;
@@ -119,5 +119,42 @@ public class TweeterUserService
 		updated.setProfile(profile);
 		userRepo.update(updated);
 		return userMapper.toDto(updated);
+	}
+
+	public void makeAFollowB(String usernameA, String usernameB) 
+	{
+		TweeterUser a = userMapper.fromDto(get(usernameA));
+		TweeterUser b = userMapper.fromDto(get(usernameB));
+		
+		a.follow(b);
+		b.addFollower(a);
+
+	}
+	
+	public void makeAUnfollowB(String usernameA, String usernameB)
+	{
+		TweeterUser a = userMapper.fromDto(get(usernameA));
+		TweeterUser b = userMapper.fromDto(get(usernameB));
+		
+		a.unfollow(b);
+		b.removeFollower(a);
+	}
+
+	public List<TweeterUserDto> getFollowers(String username) {
+
+		if(!exists(username))
+			return null;
+		
+		TweeterUser user = userMapper.fromDto(get(username));
+		
+		List<TweeterUserDto> followers = new ArrayList<TweeterUserDto>();
+		
+		for(TweeterUser f : user.getFollowers())
+		{
+			if(f.isActive())
+				followers.add(userMapper.toDto(f));
+		}
+		
+		return followers;
 	}
 }

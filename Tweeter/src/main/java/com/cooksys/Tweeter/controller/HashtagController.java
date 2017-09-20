@@ -2,6 +2,8 @@ package com.cooksys.Tweeter.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,15 +35,4 @@ public class HashtagController
 		return hashtagService.getAll();
 	}
 	
-	@GetMapping("tags/{label}")
-	public HashtagDto getHashtag(@PathVariable String label)
-	{
-		return null;
-	}
-	
-	@GetMapping("tweets/{id}/tags")
-	public List<HashtagDto> getHashtagsInMessage(@PathVariable Integer id)
-	{
-		return null;
-	}
 }

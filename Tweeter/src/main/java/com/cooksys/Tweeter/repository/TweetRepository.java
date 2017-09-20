@@ -35,4 +35,11 @@ public class TweetRepository {
 		entityManager.persist(tweet);
 		return tweet;
 	}
+
+	@Transactional
+	public Tweet update(Tweet tweet) 
+	{
+		entityManager.merge(tweet);
+		return tweet;
+	}
 }

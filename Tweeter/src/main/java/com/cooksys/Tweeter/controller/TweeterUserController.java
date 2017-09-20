@@ -134,21 +134,45 @@ public class TweeterUserController
 	}
 	
 	@PostMapping("users/@{username}/follow")
-	public void follow(@RequestBody Credentials credentials, @PathVariable String username)
+	public void follow(@RequestBody Credentials credentials, @PathVariable String username, HttpServletResponse response)
 	{
+		int id = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
 		
+		if(id > 0 && userService.exists(username))
+		{
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
+			userService.makeAFollowB(credentials.getUsername(),username);
+		}
+		
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	}
 	
 	@PostMapping("users/@{username}/unfollow")
-	public void unfollow(@RequestBody Credentials credentials, @PathVariable String username)
+	public void unfollow(@RequestBody Credentials credentials, @PathVariable String username, HttpServletResponse response)
 	{
+		int id = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
 		
+		if(id > 0 && userService.exists(username))
+		{
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
+			userService.makeAUnfollowB(credentials.getUsername(),username);
+		}
+		
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	}
 	
 	@GetMapping("users/@{username}/followers")
-	public List<TweeterUserDto> getFollowers(@PathVariable String username)
+	public List<TweeterUserDto> getFollowers(@PathVariable String username, HttpServletResponse response)
 	{
-		return null;
+		List<TweeterUserDto> followers = userService.getFollowers(username);
+		
+		if(followers.equals(null))
+		{
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
+		
+		response.setStatus(HttpServletResponse.SC_FOUND);
+		return followers;
 	}
 	
 	@GetMapping("tweets/{id}/likes")

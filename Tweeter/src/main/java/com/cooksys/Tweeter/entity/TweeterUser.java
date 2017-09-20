@@ -1,6 +1,8 @@
 package com.cooksys.Tweeter.entity;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -24,6 +26,10 @@ public class TweeterUser {
 	
 	private boolean active;
 	
+	private List<TweeterUser> follows;
+	
+	private List<TweeterUser> followers;
+	
 	public TweeterUser()
 	{
 		
@@ -35,6 +41,8 @@ public class TweeterUser {
 		this.profile = profile;
 		this.joined = new Timestamp(System.currentTimeMillis());
 		this.active = true;
+		follows = new ArrayList<TweeterUser>();
+		followers = new ArrayList<TweeterUser>();
 	}
 	
 	public Integer getUserId()
@@ -118,6 +126,51 @@ public class TweeterUser {
 	public void setActive(boolean active)
 	{
 		this.active = active;
+	}
+	
+	public List<TweeterUser> getFollows()
+	{
+		return follows;
+	}
+	
+	public void setFollows(List<TweeterUser> follows)
+	{
+		this.follows = follows;
+	}
+	
+	public void follow(TweeterUser dude)
+	{
+		follows.add(dude);
+	}
+	
+	public void unfollow(TweeterUser dude)
+	{
+		follows.remove(dude);
+	}
+	
+	public List<TweeterUser> getFollowers()
+	{
+		return followers;
+	}
+	
+	public void setFollowers(List<TweeterUser> followers)
+	{
+		this.followers = followers;
+	}
+	
+	public void addFollower(TweeterUser dude)
+	{
+		followers.add(dude);
+	}
+	
+	public void removeFollower(TweeterUser dude)
+	{
+		followers.remove(dude);
+	}
+	
+	public boolean isFollowing(TweeterUser dude)
+	{
+		return dude.followers.contains(this);
 	}
 
 	@Override
