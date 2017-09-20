@@ -115,11 +115,27 @@ public class TweetController {
 	
 	private List<TweetDto> getParentTweets(TweetDto start,List<TweetDto> listSegment)
 	{
+		List<TweetDto> list = new ArrayList<TweetDto>();
+		TweetDto newStart = listSegment.get(0);
+		
+		if(listSegment.size() == 0)
+			return list;
+		
 		for(int i = listSegment.size()-1; i>=0; i--)
 		{
-			
+			if(tweetService.areParentChild(listSegment.get(i),start))
+			{
+				newStart = listSegment.get(i);
+				list.add(newStart);
+				break;	
+			}
 		}
-		return null;
+		
+		List<TweetDto> head = getParentTweets(newStart,listSegment.subList(0, listSegment.indexOf(newStart)-1));
+		
+		head.addAll(list);
+		
+		return head;
 	}
 	
 	private List<TweetDto> getChildTweets(TweetDto start,List<TweetDto> listSegment)
@@ -140,7 +156,7 @@ public class TweetController {
 			}
 		}
 		
-		list.addAll(getChildTweets(newStart,listSegment.subList(listSegment.indexOf(newStart), listSegment.size())));
+		list.addAll(getChildTweets(newStart,listSegment.subList(listSegment.indexOf(newStart)+1, listSegment.size())));
 		
 		return list;
 	}

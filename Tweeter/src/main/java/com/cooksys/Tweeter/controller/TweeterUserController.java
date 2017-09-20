@@ -3,6 +3,8 @@ package com.cooksys.Tweeter.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,18 +14,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cooksys.Tweeter.dto.UserDto;
+import com.cooksys.Tweeter.dto.TweeterUserDto;
 import com.cooksys.Tweeter.entity.Credentials;
 import com.cooksys.Tweeter.entity.Profile;
-import com.cooksys.Tweeter.service.UserService;
+import com.cooksys.Tweeter.service.TweeterUserService;
 
 @RestController
 @RequestMapping("user")
-public class UserController 
+public class TweeterUserController 
 {
-	private UserService userService;
+	private TweeterUserService userService;
 	
-	public UserController(UserService userService)
+	public TweeterUserController(TweeterUserService userService)
 	{
 		this.userService = userService;
 	}
@@ -31,21 +33,21 @@ public class UserController
 	@GetMapping("validate/username/exists/@{username}")
 	public boolean userExists(@PathVariable String username)
 	{
-		return false;
+		return userService.exists(username);
 	}
 	
 	@GetMapping("validate/username/available/@{username}")
 	public boolean usernameAvailable(@PathVariable String username)
 	{
-		return false;
+		return userService.isAvailable(username);
 	}
 	
 	@GetMapping("users")
-	public List<UserDto> getActiveUsers()
+	public List<TweeterUserDto> getActiveUsers()
 	{
-		List<UserDto> users = new ArrayList<UserDto>();
+		List<TweeterUserDto> users = new ArrayList<TweeterUserDto>();
 		
-		for(UserDto u : userService.getAll())
+		for(TweeterUserDto u : userService.getAll())
 		{
 			if(userService.isActiveUser(u))
 				users.add(u);
@@ -55,26 +57,30 @@ public class UserController
 	}
 	
 	@PostMapping("users")
-	public UserDto postUser(@RequestBody Credentials credentials,@RequestBody UserDto user)
+	public TweeterUserDto postUser(@RequestBody Credentials credentials,@RequestBody TweeterUserDto user)
 	{
 		return null;
 	}
 	
 	@GetMapping("users/@{username}")
-	public UserDto getUser(@PathVariable String username)
+	public TweeterUserDto getUser(@PathVariable String username,HttpServletResponse response)
 	{
-		return userService.get(username);
-		//TODO: handle null return
+		TweeterUserDto user = userService.get(username);
+		if(user.equals(null))
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		else response.setStatus(HttpServletResponse.SC_FOUND); 
+			
+		return user;
 	}
 	
 	@PatchMapping("users/@{username}")
-	public UserDto changeUsername(@RequestBody Credentials credentials, @RequestBody Profile profile, @PathVariable String username)
+	public TweeterUserDto changeUsername(@RequestBody Credentials credentials, @RequestBody Profile profile, @PathVariable String username)
 	{
 		return null;
 	}
 	
 	@DeleteMapping("users/@{username}")
-	public UserDto deactiveateUser(@PathVariable String username)
+	public TweeterUserDto deactiveateUser(@PathVariable String username)
 	{
 		return null;
 	}
@@ -92,19 +98,19 @@ public class UserController
 	}
 	
 	@GetMapping("users/@{username}/followers")
-	public List<UserDto> getFollowers(@PathVariable String username)
+	public List<TweeterUserDto> getFollowers(@PathVariable String username)
 	{
 		return null;
 	}
 	
 	@GetMapping("tweets/{id}/likes")
-	public List<UserDto> getWhoLikes(@PathVariable Integer id)
+	public List<TweeterUserDto> getWhoLikes(@PathVariable Integer id)
 	{
 		return null;
 	}
 	
 	@GetMapping("tweets/{id}/mentions")
-	public List<UserDto> getThoseMentionedIn(@PathVariable Integer id)
+	public List<TweeterUserDto> getThoseMentionedIn(@PathVariable Integer id)
 	{
 		return null;
 	}

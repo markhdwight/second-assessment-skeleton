@@ -2,19 +2,17 @@ package com.cooksys.Tweeter.entity;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class User {
+public class TweeterUser {
 
 	@Id
 	@GeneratedValue
-	private Integer userID;
+	private Integer userId;
 	
 	@Embedded
 	private Credentials credentials;
@@ -26,17 +24,27 @@ public class User {
 	
 	private boolean active;
 	
-	public User()
+	public TweeterUser()
 	{
 		
 	}
 	
-	public User(String username,Profile profile)
+	public TweeterUser(String username,Profile profile)
 	{
 		credentials.setUsername(username);
 		this.profile = profile;
 		this.joined = new Timestamp(System.currentTimeMillis());
 		this.active = true;
+	}
+	
+	public Integer getUserId()
+	{
+		return userId;
+	}
+	
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
 	}
 	
 	public String getUsername() {
@@ -57,6 +65,46 @@ public class User {
 	public void setProfile(Profile profile) {
 		this.profile = profile;
 	}
+	
+	public String getEmail()
+	{
+		return profile.getEmail();
+	}
+	
+	public void setEmail(String email)
+	{
+		profile.setEmail(email);
+	}
+	
+	public String getFirstName()
+	{
+		return profile.getFirstName();
+	}
+	
+	public void setFirstName(String firstName)
+	{
+		profile.setFirstName(firstName);
+	}
+	
+	public String getLastName()
+	{
+		return profile.getLastName();
+	}
+	
+	public void setLastName(String lastName)
+	{
+		profile.setLastName(lastName);
+	}
+	
+	public String getPhoneNum()
+	{
+		return profile.getPhoneNum();
+	}
+	
+	public void setPhoneNum(String phoneNum)
+	{
+		profile.setPhoneNum(phoneNum);
+	}
 	public Timestamp getJoined() {
 		return joined;
 	}
@@ -76,7 +124,7 @@ public class User {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((userID == null) ? 0 : userID.hashCode());
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
 		return result;
 	}
 
@@ -88,11 +136,11 @@ public class User {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		User other = (User) obj;
-		if (userID == null) {
-			if (other.userID != null)
+		TweeterUser other = (TweeterUser) obj;
+		if (userId == null) {
+			if (other.userId != null)
 				return false;
-		} else if (!userID.equals(other.userID))
+		} else if (!userId.equals(other.userId))
 			return false;
 		return true;
 	}
