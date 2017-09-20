@@ -44,7 +44,7 @@ public class TweetController {
 	@GetMapping("users/@{username}/mentions")
 	public List<TweetDto> getMentions(@PathVariable String username)
 	{
-		return null;
+		return tweetService.getMentions(username);
 	}
 	
 	@GetMapping("tags/{label}")
@@ -60,7 +60,7 @@ public class TweetController {
 	}
 	
 	@PostMapping("tweets")
-	public TweetDto postTweet(@RequestBody TweetDto tweet)
+	public TweetDto postTweet(@RequestBody String content, @RequestBody Credentials credentials)
 	{
 		return null;
 	}

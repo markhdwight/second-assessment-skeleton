@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.Tweeter.mapper.TweetMapper;
+import com.cooksys.Tweeter.repository.TweetJpaRepository;
 import com.cooksys.Tweeter.repository.TweetRepository;
 import com.cooksys.Tweeter.dto.TweetDto;
 import com.cooksys.Tweeter.entity.Tweet;
@@ -15,6 +16,7 @@ import com.cooksys.Tweeter.entity.Tweet;
 public class TweetService {
 	
 	private TweetRepository tweetRepo;
+	private TweetJpaRepository tweetJpaRepo;
 	private TweetMapper tweetMapper;
 	
 	public TweetService(TweetRepository tweetRepo,TweetMapper tweetMapper)
@@ -75,26 +77,33 @@ public class TweetService {
 
 	public List<TweetDto> getTaggedTweets(String label) {
 		
-		List<TweetDto> tweets = new ArrayList<TweetDto>();
+		return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingOrderByTimestampDesc("#"+label));
+	}
+
+	public List<TweetDto> getMentions(String username) {
 		
-		for(Tweet t: tweetRepo.getAllTweets())
-		{
-			if(t.getContent().contains("@"))
-			{
-				String[] contents = t.getContent().split("@");
-				
-				for(String s : contents)
-				{
-					if(s.split(" ")[0].equals(label))
-					{
-						tweets.add(tweetMapper.toDto(t));
-						break;
-					}
-				}
-			}
-		}
+		return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingOrderByTimestampDesc("@"+username));
 		
-		return tweets;
+//		List<TweetDto> tweets = new ArrayList<TweetDto>();
+//		
+//		for(Tweet t: tweetRepo.getAllTweets())
+//		{
+//			if(t.getContent().contains("@"))
+//			{
+//				String[] contents = t.getContent().split("@");
+//				
+//				for(String s : contents)
+//				{
+//					if(s.split(" ")[0].equals(label))
+//					{
+//						tweets.add(tweetMapper.toDto(t));
+//						break;
+//					}
+//				}
+//			}
+//		}
+//		
+//		return tweets;
 	}
 
 }

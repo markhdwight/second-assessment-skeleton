@@ -24,13 +24,13 @@ public class HashtagController
 	@GetMapping("validate/tag/exists/{label}")
 	public boolean hashtagExists(@PathVariable String label)
 	{
-		return false;
+		return hashtagService.exists(label);
 	}
 	
 	@GetMapping("tags")
 	public List<HashtagDto> getHashtags()
 	{
-		return null;
+		return hashtagService.getAll();
 	}
 	
 	@GetMapping("tags/{label}")

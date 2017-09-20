@@ -59,7 +59,28 @@ public class TweeterUserController
 	@PostMapping("users")
 	public TweeterUserDto postUser(@RequestBody Credentials credentials,@RequestBody Profile profile,HttpServletResponse response)
 	{
-		return null;
+		if(userService.exists(credentials.getUsername()))	//Check to see if the user exists already, and either exit or reactivate the user
+		{
+			int id = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
+			
+			if(id>0)
+			{
+				if(userService.isActiveUser(userService.get(id)))
+				{
+					response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+					return null;
+				}
+				else return userService.activate(id);		
+			}
+		}
+		if(profile.getEmail().equals(null) || !credentials.areComplete())	//Check to see that email and credentials are provided in the request
+		{
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return null;
+		}
+		TweeterUserDto user = userService.create(credentials,profile);
+		response.setStatus(HttpServletResponse.SC_ACCEPTED);
+		return user;
 	}
 	
 	@GetMapping("users/@{username}")
@@ -74,14 +95,41 @@ public class TweeterUserController
 	}
 	
 	@PatchMapping("users/@{username}")
-	public TweeterUserDto updateProfile(@RequestBody Credentials credentials, @RequestBody Profile profile, @PathVariable String username)
+	public TweeterUserDto updateProfile(@RequestBody Credentials credentials, @RequestBody Profile profile, @PathVariable String username,HttpServletResponse response)
 	{
-		return null;
+		if(!userService.exists(credentials.getUsername()))
+		{
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return null;
+		}
+		
+		int id = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
+		if(id < 0)
+		{
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return null;
+		}
+		
+		if(!userService.isActiveUser(userService.get(id)))
+		{
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return null;
+		}
+		
+		response.setStatus(HttpServletResponse.SC_ACCEPTED);
+		return userService.update(id,profile);
 	}
 	
 	@DeleteMapping("users/@{username}")
-	public TweeterUserDto deactiveateUser(@RequestBody Credentials credentials, @PathVariable String username)
+	public TweeterUserDto deactiveateUser(@RequestBody Credentials credentials, @PathVariable String username,HttpServletResponse response)
 	{
+		int id = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
+		if(id > 0)
+		{	
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
+			return userService.deactivate(id);
+		}
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		return null;
 	}
 	

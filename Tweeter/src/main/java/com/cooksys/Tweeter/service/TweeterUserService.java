@@ -9,6 +9,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.Tweeter.dto.TweeterUserDto;
+import com.cooksys.Tweeter.entity.Credentials;
+import com.cooksys.Tweeter.entity.Profile;
 import com.cooksys.Tweeter.entity.TweeterUser;
 
 @Service
@@ -90,5 +92,32 @@ public class TweeterUserService
 				return u.getUserId();
 		}
 		return -1;
+	}
+
+	public TweeterUserDto create(Credentials credentials, Profile profile) {
+
+		TweeterUser user = new TweeterUser(credentials.getUsername(),profile);
+		user.setPassword(credentials.getPassword());
+		return null;
+	}
+
+	public TweeterUserDto activate(int id) 
+	{
+		userMapper.toDto(userRepo.get(id)).setActive(true);
+		return userMapper.toDto(userRepo.get(id));
+	}
+	
+	public TweeterUserDto deactivate(int id)
+	{
+		userMapper.toDto(userRepo.get(id)).setActive(false);
+		return userMapper.toDto(userRepo.get(id));
+	}
+
+	public TweeterUserDto update(int id, Profile profile) {
+
+		TweeterUser updated = userRepo.get(id);
+		updated.setProfile(profile);
+		userRepo.update(updated);
+		return userMapper.toDto(updated);
 	}
 }

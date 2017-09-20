@@ -9,6 +9,7 @@ public class Credentials
 	@Column(unique = true,nullable = false)
 	private String username;
 	
+	@Column(nullable = false)
 	private String password;
 
 	public String getUsername() {
@@ -25,5 +26,10 @@ public class Credentials
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public boolean areComplete() {
+		// TODO Auto-generated method stub
+		return (!username.equals(null) & !password.equals(null));
 	}	
 }

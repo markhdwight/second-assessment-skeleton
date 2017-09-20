@@ -35,5 +35,12 @@ public class TweeterUserRepository {
 		entityManager.persist(user);
 		return user;
 	}
+	
+	@Transactional
+	public TweeterUser update(TweeterUser user)
+	{
+		entityManager.merge(user);
+		return user;
+	}
 
 }
