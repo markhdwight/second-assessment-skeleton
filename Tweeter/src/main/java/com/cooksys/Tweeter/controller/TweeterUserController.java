@@ -57,7 +57,7 @@ public class TweeterUserController
 	}
 	
 	@PostMapping("users")
-	public TweeterUserDto postUser(@RequestBody Credentials credentials,@RequestBody TweeterUserDto user)
+	public TweeterUserDto postUser(@RequestBody Credentials credentials,@RequestBody Profile profile,HttpServletResponse response)
 	{
 		return null;
 	}
@@ -74,13 +74,13 @@ public class TweeterUserController
 	}
 	
 	@PatchMapping("users/@{username}")
-	public TweeterUserDto changeUsername(@RequestBody Credentials credentials, @RequestBody Profile profile, @PathVariable String username)
+	public TweeterUserDto updateProfile(@RequestBody Credentials credentials, @RequestBody Profile profile, @PathVariable String username)
 	{
 		return null;
 	}
 	
 	@DeleteMapping("users/@{username}")
-	public TweeterUserDto deactiveateUser(@PathVariable String username)
+	public TweeterUserDto deactiveateUser(@RequestBody Credentials credentials, @PathVariable String username)
 	{
 		return null;
 	}

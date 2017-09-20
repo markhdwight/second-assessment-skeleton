@@ -50,7 +50,7 @@ public class TweetController {
 	@GetMapping("tags/{label}")
 	public List<TweetDto> getTaggedTweets(@PathVariable String label)
 	{
-		return null;
+		return tweetService.getTaggedTweets(label);
 	}
 	
 	@GetMapping("tweets")

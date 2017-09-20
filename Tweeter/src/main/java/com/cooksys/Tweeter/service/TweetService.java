@@ -73,4 +73,28 @@ public class TweetService {
 		return false;
 	}
 
+	public List<TweetDto> getTaggedTweets(String label) {
+		
+		List<TweetDto> tweets = new ArrayList<TweetDto>();
+		
+		for(Tweet t: tweetRepo.getAllTweets())
+		{
+			if(t.getContent().contains("@"))
+			{
+				String[] contents = t.getContent().split("@");
+				
+				for(String s : contents)
+				{
+					if(s.split(" ")[0].equals(label))
+					{
+						tweets.add(tweetMapper.toDto(t));
+						break;
+					}
+				}
+			}
+		}
+		
+		return tweets;
+	}
+
 }
