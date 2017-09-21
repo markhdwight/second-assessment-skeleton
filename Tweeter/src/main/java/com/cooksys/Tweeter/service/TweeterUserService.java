@@ -1,6 +1,7 @@
 package com.cooksys.Tweeter.service;
 
 import com.cooksys.Tweeter.mapper.TweeterUserMapper;
+import com.cooksys.Tweeter.repository.TweetRepository;
 import com.cooksys.Tweeter.repository.TweeterUserRepository;
 
 import java.util.ArrayList;
@@ -11,18 +12,21 @@ import org.springframework.stereotype.Service;
 import com.cooksys.Tweeter.dto.TweeterUserDto;
 import com.cooksys.Tweeter.entity.Credentials;
 import com.cooksys.Tweeter.entity.Profile;
+import com.cooksys.Tweeter.entity.Tweet;
 import com.cooksys.Tweeter.entity.TweeterUser;
 
 @Service
 public class TweeterUserService 
 {
 	private TweeterUserRepository userRepo;
+	private TweetRepository tweetRepo;
 	private TweeterUserMapper userMapper;
 	
-	public TweeterUserService(TweeterUserRepository userRepo, TweeterUserMapper userMapper)
+	public TweeterUserService(TweeterUserRepository userRepo, TweeterUserMapper userMapper, TweetRepository tweetRepo)
 	{
 		this.userRepo = userRepo;
 		this.userMapper = userMapper;
+		this.tweetRepo = tweetRepo;
 	}
 	
 	public List<TweeterUserDto> getAll()
@@ -156,5 +160,41 @@ public class TweeterUserService
 		}
 		
 		return followers;
+	}
+	
+	public List<TweeterUserDto> getWhoLikes(Integer id) {
+
+		Tweet tweet = tweetRepo.get(id);
+		List<TweeterUser> users = new ArrayList<TweeterUser>();
+		
+		for(TweeterUser u : tweet.getLikes())
+		{
+			if(u.isActive())
+				users.add(u);
+		}
+		return userMapper.toDtos(users);
+	}
+
+	public List<TweeterUserDto> getThoseMentionedIn(Integer tweetId) {
+		
+		Tweet tweet = tweetRepo.get(tweetId);
+		List<TweeterUser> users = new ArrayList<TweeterUser>();
+		
+		for(String s : tweet.getContent().split(" "))
+		{
+			if(s.charAt(0) == '@')
+			{
+				for(TweeterUser u : userRepo.getAllUsers())
+				{
+					if(u.getUsername().equals(s.substring(1)))
+					{
+						if(u.isActive())
+							users.add(u);
+					}
+				}
+			}
+		}
+		
+		return userMapper.toDtos(users);
 	}
 }

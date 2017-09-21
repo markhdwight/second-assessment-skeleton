@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cooksys.Tweeter.dto.TweeterUserDto;
 import com.cooksys.Tweeter.entity.Credentials;
 import com.cooksys.Tweeter.entity.Profile;
+import com.cooksys.Tweeter.service.TweetService;
 import com.cooksys.Tweeter.service.TweeterUserService;
 
 @RestController
@@ -24,10 +25,12 @@ import com.cooksys.Tweeter.service.TweeterUserService;
 public class TweeterUserController 
 {
 	private TweeterUserService userService;
+	private TweetService tweetService;
 	
-	public TweeterUserController(TweeterUserService userService)
+	public TweeterUserController(TweeterUserService userService,TweetService tweetService)
 	{
 		this.userService = userService;
+		this.tweetService = tweetService;
 	}
 	
 	@GetMapping("validate/username/exists/@{username}")
@@ -140,11 +143,10 @@ public class TweeterUserController
 		
 		if(id > 0 && userService.exists(username))
 		{
-			response.setStatus(HttpServletResponse.SC_ACCEPTED);
 			userService.makeAFollowB(credentials.getUsername(),username);
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
 		}
-		
-		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		else response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	}
 	
 	@PostMapping("users/@{username}/unfollow")
@@ -154,11 +156,10 @@ public class TweeterUserController
 		
 		if(id > 0 && userService.exists(username))
 		{
-			response.setStatus(HttpServletResponse.SC_ACCEPTED);
 			userService.makeAUnfollowB(credentials.getUsername(),username);
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
 		}
-		
-		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		else response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	}
 	
 	@GetMapping("users/@{username}/followers")
@@ -176,14 +177,26 @@ public class TweeterUserController
 	}
 	
 	@GetMapping("tweets/{id}/likes")
-	public List<TweeterUserDto> getWhoLikes(@PathVariable Integer id)
+	public List<TweeterUserDto> getWhoLikes(@PathVariable Integer id, HttpServletResponse response)
 	{
+		if(tweetService.exists(id))
+		{
+			response.setStatus(HttpServletResponse.SC_FOUND);
+			return userService.getWhoLikes(id);
+		}
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;
 	}
 	
 	@GetMapping("tweets/{id}/mentions")
-	public List<TweeterUserDto> getThoseMentionedIn(@PathVariable Integer id)
+	public List<TweeterUserDto> getThoseMentionedIn(@PathVariable Integer id, HttpServletResponse response)
 	{
+		if(tweetService.exists(id))
+		{
+			response.setStatus(HttpServletResponse.SC_FOUND);
+			return userService.getThoseMentionedIn(id);
+		}
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;
 	}
 }

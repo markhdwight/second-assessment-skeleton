@@ -12,8 +12,11 @@ import com.cooksys.Tweeter.repository.HashtagJpaRepository;
 import com.cooksys.Tweeter.repository.HashtagRepository;
 import com.cooksys.Tweeter.repository.TweetJpaRepository;
 import com.cooksys.Tweeter.repository.TweetRepository;
+import com.cooksys.Tweeter.repository.TweeterUserJpaRepository;
+import com.cooksys.Tweeter.repository.TweeterUserRepository;
 import com.cooksys.Tweeter.dto.HashtagDto;
 import com.cooksys.Tweeter.dto.TweetDto;
+import com.cooksys.Tweeter.dto.TweeterUserDto;
 import com.cooksys.Tweeter.entity.Hashtag;
 import com.cooksys.Tweeter.entity.Tweet;
 import com.cooksys.Tweeter.entity.TweeterUser;
@@ -23,13 +26,17 @@ public class TweetService {
 	
 	private TweetRepository tweetRepo;
 	private TweetJpaRepository tweetJpaRepo;
+	private TweeterUserRepository userRepo;
+	private TweeterUserJpaRepository userJpaRepo;
 	private HashtagRepository hashtagRepo;
 	private TweetMapper tweetMapper;
 	
-	public TweetService(TweetRepository tweetRepo,TweetMapper tweetMapper,HashtagRepository hashtagRepo)
+	public TweetService(TweetRepository tweetRepo,TweetMapper tweetMapper, TweeterUserRepository userRepo, TweeterUserJpaRepository userJpaRepo, HashtagRepository hashtagRepo)
 	{
 		this.tweetRepo = tweetRepo;
 		this.tweetMapper = tweetMapper;
+		this.userRepo = userRepo;
+		this.userJpaRepo = userJpaRepo;
 		this.hashtagRepo = hashtagRepo;
 	}
 	
@@ -69,6 +76,21 @@ public class TweetService {
 		return tweetMapper.toDtos(tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(username));
 	}
 	
+	public List<TweetDto> getFeedFor(String username) {
+
+		List<Tweet> tweets = tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(username);
+		
+		for(TweeterUser u : userJpaRepo.findByUsername(username).get(0).getFollows())
+		{
+			tweets.addAll(tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(u.getUsername()));
+		}
+		
+		Collections.sort(tweets);
+		Collections.reverse(tweets);
+		
+		return tweetMapper.toDtos(tweets);
+	}
+	
 	public TweetDto get(Integer id)
 	{
 		return tweetMapper.toDto(tweetRepo.get(id));
@@ -78,7 +100,7 @@ public class TweetService {
 	public boolean exists(Integer id) {
 		for(Tweet t: tweetRepo.getAllTweets())
 		{
-			if(t.getTweetId() == id)
+			if(t.getTweetId() == id && t.isActive())
 				return true;
 		}
 		return false;
@@ -215,4 +237,13 @@ public class TweetService {
 		
 		return tweetMapper.toDtos(tweetJpaRepo.findByRepostOfAndActiveTrue(tweet));
 	}
+
+	public void addToLikes(Integer tweetId, Integer userId) {
+
+		Tweet tweet = tweetRepo.get(tweetId);
+		TweeterUser dude = userRepo.get(userId);
+		
+		tweet.likedBy(dude);
+	}
+
 }

@@ -41,6 +41,14 @@ public class TweetController {
 	@GetMapping("users/@{username}/feed")
 	public List<TweetDto> getFeed(@PathVariable String username, HttpServletResponse response)
 	{
+		if(userService.exists(username))
+		{
+			List<TweetDto> tweets = tweetService.getFeedFor(username);
+			response.setStatus(HttpServletResponse.SC_FOUND);
+			return tweets;
+		}
+		
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;
 	}
 	
@@ -130,8 +138,14 @@ public class TweetController {
 	@PostMapping("tweets/{id}/like")
 	public void likeTweetById(@RequestBody Credentials credentials, @PathVariable Integer id, HttpServletResponse response)
 	{
-		//TODO
 		int userId = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
+		
+		if(userId > 0 && tweetService.exists(id))
+		{
+			tweetService.addToLikes(id,userId);
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
+		}
+		else response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 	}
 	
 	@PostMapping("tweets/{id}/reply")
