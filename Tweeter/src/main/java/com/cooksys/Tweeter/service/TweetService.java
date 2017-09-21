@@ -146,7 +146,7 @@ public class TweetService {
 
 		Tweet tweet = tweetRepo.get(id);
 		
-		if(tweet.equals(null))
+		if(tweet == null)
 		{
 			return null;
 		}
@@ -189,7 +189,7 @@ public class TweetService {
 
 		Tweet tweet = tweetRepo.get(id);
 		
-		if(tweet.equals(null))
+		if(tweet == null)
 		{
 			return null;
 		}
@@ -222,7 +222,7 @@ public class TweetService {
 
 		Tweet tweet = tweetRepo.get(id);
 		
-		if(tweet.equals(null) || !tweet.isActive())
+		if(tweet == null || !tweet.isActive())
 			return null;
 		
 		return tweetMapper.toDtos(tweetJpaRepo.findByInReplyToAndActiveTrue(tweet));
@@ -232,7 +232,7 @@ public class TweetService {
 	{
 		Tweet tweet = tweetRepo.get(id);
 		
-		if(tweet.equals(null) || !tweet.isActive())
+		if(tweet == null || !tweet.isActive())
 			return null;
 		
 		return tweetMapper.toDtos(tweetJpaRepo.findByRepostOfAndActiveTrue(tweet));

@@ -183,6 +183,20 @@ public class TweeterUserController
 		return followers;
 	}
 	
+	@GetMapping("users/@{username}/following")
+	public List<TweeterUserDto> getFollowing(@PathVariable String username, HttpServletResponse response)
+	{
+		List<TweeterUserDto> following = userService.getFollowing(username);
+		
+		if(following == null)
+		{
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
+		
+		response.setStatus(HttpServletResponse.SC_FOUND);
+		return following;
+	}
+	
 	@GetMapping("tweets/{id}/likes")
 	public List<TweeterUserDto> getWhoLikes(@PathVariable Integer id, HttpServletResponse response)
 	{

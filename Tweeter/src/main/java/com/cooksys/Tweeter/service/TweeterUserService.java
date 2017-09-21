@@ -162,6 +162,24 @@ public class TweeterUserService
 		return followers;
 	}
 	
+	public List<TweeterUserDto> getFollowing(String username) {
+		
+		if(!exists(username))
+			return null;
+		
+		TweeterUser user = userMapper.fromDto(get(username));
+		
+		List<TweeterUserDto> following = new ArrayList<TweeterUserDto>();
+		
+		for(TweeterUser f : user.getFollows())
+		{
+			if(f.isActive())
+				following.add(userMapper.toDto(f));
+		}
+		
+		return following;
+	}
+	
 	public List<TweeterUserDto> getWhoLikes(Integer id) {
 
 		Tweet tweet = tweetRepo.get(id);
@@ -197,4 +215,5 @@ public class TweeterUserService
 		
 		return userMapper.toDtos(users);
 	}
+	
 }
