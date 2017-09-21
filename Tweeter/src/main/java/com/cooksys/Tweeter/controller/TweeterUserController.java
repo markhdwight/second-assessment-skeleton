@@ -80,7 +80,7 @@ public class TweeterUserController
 				else return userService.activate(id);		
 			}
 		}
-		if(profile.getEmail().equals(null) || !credentials.areComplete())	//Check to see that email and credentials are provided in the request
+		if(profile.getEmail() == null || !credentials.areComplete())	//Check to see that email and credentials are provided in the request
 		{
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return null;
@@ -94,7 +94,7 @@ public class TweeterUserController
 	public TweeterUserDto getUser(@PathVariable String username,HttpServletResponse response)
 	{
 		TweeterUserDto user = userService.get(username);
-		if(user.equals(null))
+		if(user == null)
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		else response.setStatus(HttpServletResponse.SC_FOUND); 
 			
@@ -134,7 +134,7 @@ public class TweeterUserController
 	public TweeterUserDto deactiveateUser(@RequestBody Credentials credentials, @PathVariable String username,HttpServletResponse response)
 	{
 		int id = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
-		if(id > 0)
+		if(id > 0 && username.equals(credentials.getUsername()))
 		{	
 			response.setStatus(HttpServletResponse.SC_ACCEPTED);
 			return userService.deactivate(id);
@@ -174,7 +174,7 @@ public class TweeterUserController
 	{
 		List<TweeterUserDto> followers = userService.getFollowers(username);
 		
-		if(followers.equals(null))
+		if(followers == null)
 		{
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}

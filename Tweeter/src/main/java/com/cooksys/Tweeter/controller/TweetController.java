@@ -109,7 +109,7 @@ public class TweetController {
 	{
 		TweetDto tweet = tweetService.get(id);
 		
-		if(!tweet.equals(null) && tweet.isActive())
+		if(!(tweet == null) && tweet.isActive())
 			response.setStatus(HttpServletResponse.SC_FOUND);
 		else response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		
@@ -125,7 +125,7 @@ public class TweetController {
 		{
 			TweetDto tweet = tweetService.get(id);
 			
-			if(tweet.equals(null))
+			if(tweet == null)
 			{
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				return tweet;
@@ -164,7 +164,7 @@ public class TweetController {
 		{
 			TweetDto reply = tweetService.createReply(credentials.getUsername(),id,content);
 			
-			if(reply.equals(null))
+			if(reply == null)
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			else response.setStatus(HttpServletResponse.SC_FOUND);
 			
@@ -184,7 +184,7 @@ public class TweetController {
 		{
 			TweetDto repost = tweetService.createRepost(credentials.getUsername(),id);
 			
-			if(repost.equals(null))
+			if(repost == null)
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			else response.setStatus(HttpServletResponse.SC_FOUND);
 			
@@ -266,7 +266,7 @@ public class TweetController {
 	{
 		List<TweetDto> replies = tweetService.getRepliesOf(id);
 		
-		if(replies.equals(null))
+		if(replies == null)
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		else response.setStatus(HttpServletResponse.SC_FOUND);
 		
@@ -278,7 +278,7 @@ public class TweetController {
 	{
 		List<TweetDto> reposts = tweetService.getRepostsOf(id);
 		
-		if(reposts.equals(null))
+		if(reposts == null)
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		else response.setStatus(HttpServletResponse.SC_FOUND);
 		
