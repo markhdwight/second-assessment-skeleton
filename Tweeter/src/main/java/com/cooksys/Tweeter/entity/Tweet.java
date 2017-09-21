@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Tweet implements Comparable{
@@ -21,12 +23,15 @@ public class Tweet implements Comparable{
 	
 	private Timestamp timestamp;
 	
+	@OneToOne
 	private Tweet inReplyTo;
 	
+	@OneToOne
 	private Tweet repostOf;
 	
 	private boolean active;
 	
+	@OneToMany
 	private List<TweeterUser> likes;
 	
 	public Tweet()

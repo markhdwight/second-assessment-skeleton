@@ -8,6 +8,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class TweeterUser {
@@ -26,8 +27,10 @@ public class TweeterUser {
 	
 	private boolean active;
 	
+	@OneToMany
 	private List<TweeterUser> follows;
 	
+	@OneToMany
 	private List<TweeterUser> followers;
 	
 	public TweeterUser()
