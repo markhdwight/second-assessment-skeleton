@@ -39,7 +39,8 @@ public class TweeterUserRepository {
 	@Transactional
 	public TweeterUser update(TweeterUser user)
 	{
-		entityManager.merge(user);
+		TweeterUser result = entityManager.merge(user);
+		System.out.println(result.getFollowers());
 		return user;
 	}
 

@@ -106,7 +106,10 @@ public class TweeterUser {
 		return new Profile(firstName,lastName,email,phoneNum);
 	}
 	public void setProfile(Profile profile) {
-		//this.profile = profile;
+		this.firstName = profile.getFirstName();
+		this.lastName = profile.getLastName();
+		this.email = profile.getEmail();
+		this.phoneNum = profile.getPhoneNum();
 	}
 	
 	//@Column(name="email")
@@ -192,7 +195,15 @@ public class TweeterUser {
 	
 	public void unfollow(TweeterUser dude)
 	{
-		follows.remove(dude);
+		//follows.remove(dude);
+		for(TweeterUser t : follows)
+		{
+			if(dude.getUsername().equals(t.getUsername()))
+			{
+				follows.remove(t);
+				break;
+			}
+		}
 	}
 	
 	public List<TweeterUser> getFollowers()
@@ -212,7 +223,15 @@ public class TweeterUser {
 	
 	public void removeFollower(TweeterUser dude)
 	{
-		followers.remove(dude);
+		//followers.remove(dude);
+		for(TweeterUser t : followers)
+		{
+			if(dude.getUsername().equals(t.getUsername()))
+			{
+				followers.remove(t);
+				break;
+			}
+		}
 	}
 	
 	public boolean isFollowing(TweeterUser dude)

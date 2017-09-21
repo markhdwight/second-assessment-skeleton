@@ -25,18 +25,16 @@ public class Tweet implements Comparable<Tweet>{
 	
 	private Timestamp timestamp;
 	
-	//@Column(nullable = true)
 	@OneToOne
 	private Tweet inReplyTo;
 	
-	//@Column(nullable = true)
 	@OneToOne
 	private Tweet repostOf;
 	
 	private boolean active;
 	
 	@OneToMany
-	private List<TweeterUser> likes;
+	private List<TweeterUser> likes;// = new ArrayList<TweeterUser>();
 	
 	public Tweet()
 	{
@@ -47,6 +45,9 @@ public class Tweet implements Comparable<Tweet>{
 	{
 		this.author = author;
 		this.content = content;
+		this.active = true;
+		timestamp = new Timestamp(System.currentTimeMillis());
+		likes = new ArrayList<TweeterUser>();
 	}
 	
 	public Integer getTweetId() {

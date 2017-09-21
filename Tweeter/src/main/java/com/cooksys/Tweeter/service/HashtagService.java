@@ -53,7 +53,14 @@ public class HashtagService {
 
 	public boolean exists(String label) {
 
-		return hashtagJpaRepo.findByLabel(label).size()>0;
+		for(Hashtag h : hashtagRepo.getAllHashtags())
+		{
+			if(h.getLabel().equals(label))
+				return true;
+		}
+		return false;
+		
+		//return hashtagJpaRepo.findByLabel(label).size()>0;
 	}
 
 	public List<HashtagDto> getTagsIn(Integer id) {

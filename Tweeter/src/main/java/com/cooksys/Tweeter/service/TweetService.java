@@ -42,13 +42,16 @@ public class TweetService {
 	
 	public List<TweetDto> getAll()
 	{
-		List<TweetDto> tweets = new ArrayList<TweetDto>();
+		List<Tweet> tweets = new ArrayList<Tweet>();
 		for(Tweet t: tweetRepo.getAllTweets())
 		{
-			tweets.add(tweetMapper.toDto(t));
+			if(t.isActive())
+				tweets.add(t);
 		}
 		
-		return tweets;
+		Collections.sort(tweets);
+		Collections.reverse(tweets);
+		return tweetMapper.toDtos(tweets);
 	}
 	
 	public List<TweetDto> getAllChronological()
@@ -65,7 +68,8 @@ public class TweetService {
 		
 		for(Tweet t: tweets)
 		{
-			tweetsDto.add(tweetMapper.toDto(t));
+			if(t.isActive())
+				tweetsDto.add(tweetMapper.toDto(t));
 		}
 		
 		return tweetsDto;
@@ -154,7 +158,7 @@ public class TweetService {
 		Tweet reply = new Tweet(username,content);
 		reply.setInReplyTo(tweet);
 		
-		tweetRepo.create(tweet);
+		tweetRepo.create(reply);
 		
 		updateHashtags(tweet);
 		

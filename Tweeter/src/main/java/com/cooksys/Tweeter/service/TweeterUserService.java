@@ -7,6 +7,9 @@ import com.cooksys.Tweeter.repository.TweeterUserRepository;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import com.cooksys.Tweeter.dto.TweeterUserDto;
@@ -22,11 +25,14 @@ public class TweeterUserService
 	private TweetRepository tweetRepo;
 	private TweeterUserMapper userMapper;
 	
-	public TweeterUserService(TweeterUserRepository userRepo, TweeterUserMapper userMapper, TweetRepository tweetRepo)
+	private EntityManager mgmt;
+	
+	public TweeterUserService(EntityManager mgmt, TweeterUserRepository userRepo, TweeterUserMapper userMapper, TweetRepository tweetRepo)
 	{
 		this.userRepo = userRepo;
 		this.userMapper = userMapper;
 		this.tweetRepo = tweetRepo;
+		this.mgmt = mgmt;
 	}
 	
 	public List<TweeterUserDto> getAll()
@@ -58,6 +64,21 @@ public class TweeterUserService
 		}
 		return null;
 	}
+	
+	private TweeterUser getEntity(String username)
+	{
+		for(TweeterUser u : userRepo.getAllUsers())
+		{
+			if(u.getUsername().equals(username))
+			{
+				if(u.isActive())
+					return u;
+				else return null;
+			}
+		}
+		return null;
+	}
+
 
 	public boolean isActiveUser(TweeterUserDto u) {
 
@@ -134,23 +155,32 @@ public class TweeterUserService
 		return userMapper.toDto(updated);
 	}
 
+	@Transactional
 	public void makeAFollowB(String usernameA, String usernameB) 
 	{
-		TweeterUser a = userMapper.fromDto(get(usernameA));
-		TweeterUser b = userMapper.fromDto(get(usernameB));
+		TweeterUser a = (TweeterUser) mgmt.createQuery("FROM TweeterUser WHERE userName = '" + usernameA + "'").getSingleResult();
+		TweeterUser b = (TweeterUser) mgmt.createQuery("FROM TweeterUser WHERE userName = '" + usernameB + "'").getSingleResult();
 		
 		a.follow(b);
 		b.addFollower(a);
 
+//		userRepo.update(a);
+//		userRepo.update(b);
+		
 	}
 	
 	public void makeAUnfollowB(String usernameA, String usernameB)
 	{
-		TweeterUser a = userMapper.fromDto(get(usernameA));
-		TweeterUser b = userMapper.fromDto(get(usernameB));
+//		TweeterUser a = mgmt.merge(userMapper.fromDto(get(usernameA)));
+//		TweeterUser b = mgmt.merge(userMapper.fromDto(get(usernameB)));
+		TweeterUser a = (TweeterUser) mgmt.createQuery("FROM TweeterUser WHERE userName = '" + usernameA + "'").getSingleResult();
+		TweeterUser b = (TweeterUser) mgmt.createQuery("FROM TweeterUser WHERE userName = '" + usernameB + "'").getSingleResult();
 		
 		a.unfollow(b);
 		b.removeFollower(a);
+		
+//		userRepo.update(a);
+//		userRepo.update(b);
 	}
 
 	public List<TweeterUserDto> getFollowers(String username) {
@@ -158,7 +188,7 @@ public class TweeterUserService
 		if(!exists(username))
 			return null;
 		
-		TweeterUser user = userMapper.fromDto(get(username));
+		TweeterUser user = getEntity(username);
 		
 		List<TweeterUserDto> followers = new ArrayList<TweeterUserDto>();
 		
@@ -176,7 +206,7 @@ public class TweeterUserService
 		if(!exists(username))
 			return null;
 		
-		TweeterUser user = userMapper.fromDto(get(username));
+		TweeterUser user = getEntity(username);
 		
 		List<TweeterUserDto> following = new ArrayList<TweeterUserDto>();
 		

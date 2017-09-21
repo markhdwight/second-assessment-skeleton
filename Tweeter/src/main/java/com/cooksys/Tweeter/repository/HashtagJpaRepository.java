@@ -8,5 +8,5 @@ import com.cooksys.Tweeter.entity.Hashtag;
 
 public interface HashtagJpaRepository extends JpaRepository<Hashtag, Integer> {
 
-	List<Hashtag> findByLabel(String label); 
+	List<Hashtag> findByLabel(String label); //presently returns null
 }
