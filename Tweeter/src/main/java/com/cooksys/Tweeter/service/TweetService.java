@@ -229,7 +229,19 @@ public class TweetService {
 		if(tweet == null || !tweet.isActive())
 			return null;
 		
-		return tweetMapper.toDtos(tweetJpaRepo.findByInReplyToAndActiveTrue(tweet));
+		List<Tweet> replies = new ArrayList<Tweet>();
+		
+		for(Tweet t : tweetRepo.getAllTweets())
+		{
+			if(t.getInReplyTo() != null)
+			{
+				if(t.getInReplyTo().getTweetId() == tweet.getTweetId())
+					replies.add(t);
+			}
+		}
+		
+		return tweetMapper.toDtos(replies);
+		//return tweetMapper.toDtos(tweetJpaRepo.findByInReplyToAndActiveTrue(tweet));
 	}
 	
 	public List<TweetDto> getRepostsOf(Integer id)
@@ -239,7 +251,19 @@ public class TweetService {
 		if(tweet == null || !tweet.isActive())
 			return null;
 		
-		return tweetMapper.toDtos(tweetJpaRepo.findByRepostOfAndActiveTrue(tweet));
+		List<Tweet> reposts = new ArrayList<Tweet>();
+		
+		for(Tweet t : tweetRepo.getAllTweets())
+		{
+			if(t.getRepostOf() != null)
+			{
+				if(t.getRepostOf().getTweetId() == tweet.getTweetId())
+					reposts.add(t);
+			}
+		}
+		
+		return tweetMapper.toDtos(reposts);
+		//return tweetMapper.toDtos(tweetJpaRepo.findByRepostOfAndActiveTrue(tweet));
 	}
 
 	public void addToLikes(Integer tweetId, Integer userId) {
