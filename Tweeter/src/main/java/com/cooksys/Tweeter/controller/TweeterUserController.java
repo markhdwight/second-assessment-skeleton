@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.Tweeter.dto.TweeterUserDto;
+import com.cooksys.Tweeter.entity.AccountInfo;
 import com.cooksys.Tweeter.entity.Credentials;
 import com.cooksys.Tweeter.entity.Profile;
 import com.cooksys.Tweeter.service.TweetService;
@@ -59,9 +60,12 @@ public class TweeterUserController
 		return users;
 	}
 	
-	@PostMapping("users")
-	public TweeterUserDto postUser(@RequestBody Credentials credentials,@RequestBody Profile profile,HttpServletResponse response)
+	@PostMapping
+	public TweeterUserDto postUser(@RequestBody AccountInfo info,HttpServletResponse response)
 	{
+		Credentials credentials = info.credentials;
+		Profile profile = info.profile;
+		
 		if(userService.exists(credentials.getUsername()))	//Check to see if the user exists already, and either exit or reactivate the user
 		{
 			int id = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
@@ -98,8 +102,11 @@ public class TweeterUserController
 	}
 	
 	@PatchMapping("users/@{username}")
-	public TweeterUserDto updateProfile(@RequestBody Credentials credentials, @RequestBody Profile profile, @PathVariable String username,HttpServletResponse response)
+	public TweeterUserDto updateProfile(@RequestBody AccountInfo info, @PathVariable String username,HttpServletResponse response)
 	{
+		Credentials credentials = info.credentials;
+		Profile profile = info.profile;
+		
 		if(!userService.exists(credentials.getUsername()))
 		{
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);

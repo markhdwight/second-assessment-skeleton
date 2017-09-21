@@ -9,9 +9,17 @@ public class TweeterUserDto {
 	
 	private Integer userId;
 	
-	private Credentials credentials;
+	private String userName;
 	
-	private Profile profile;
+	private String password;
+	
+	private String firstName;
+	
+	private String lastName;
+	
+	private String email;
+	
+	private String phoneNum;
 	
 	private Timestamp joined;
 	
@@ -26,69 +34,51 @@ public class TweeterUserDto {
 	}
 	
 	public String getUsername() {
-		return credentials.getUsername();
+		return userName;
 	}
 
-	public void setUsername(String username) {
-		credentials.setUsername(username);
+	public void setUsername(String userName) {
+		this.userName = userName;
 	}
 
 	public String getPassword() {
-		return credentials.getPassword();
+		return password;
 	}
 
 	public void setPassword(String password) {
-		credentials.setPassword(password);
+		this.password = password;
 	}
-	
-	public Profile getProfile()
-	{
-		return profile;
+
+	public String getFirstName() {
+		return firstName;
 	}
-	
-	public void setProfile(Profile profile)
-	{
-		this.profile = profile;
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
-	
-	public String getEmail()
-	{
-		return profile.getEmail();
+
+	public String getLastName() {
+		return lastName;
 	}
-	
-	public void setEmail(String email)
-	{
-		profile.setEmail(email);
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
-	
-	public String getFirstName()
-	{
-		return profile.getFirstName();
+
+	public String getEmail() {
+		return email;
 	}
-	
-	public void setFirstName(String firstName)
-	{
-		profile.setFirstName(firstName);
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
-	
-	public String getLastName()
-	{
-		return profile.getLastName();
+
+	public String getPhoneNum() {
+		return phoneNum;
 	}
-	
-	public void setLastName(String lastName)
-	{
-		profile.setLastName(lastName);
-	}
-	
-	public String getPhoneNum()
-	{
-		return profile.getPhoneNum();
-	}
-	
-	public void setPhoneNum(String phoneNum)
-	{
-		profile.setPhoneNum(phoneNum);
+
+	public void setPhoneNum(String phoneNum) {
+		this.phoneNum = phoneNum;
 	}
 
 	public Timestamp getJoined() {

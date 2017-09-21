@@ -22,6 +22,7 @@ import com.cooksys.Tweeter.service.TweetService;
 import com.cooksys.Tweeter.service.TweeterUserService;
 import com.cooksys.Tweeter.entity.Credentials;
 import com.cooksys.Tweeter.entity.TweetContext;
+import com.cooksys.Tweeter.entity.TweetInfo;
 
 @RestController
 @RequestMapping("tweet")
@@ -73,11 +74,11 @@ public class TweetController {
 		return tweetService.getMentions(username);
 	}
 	
-	@GetMapping("tags/{label}")
-	public List<TweetDto> getTaggedTweets(@PathVariable String label)
-	{
-		return tweetService.getTaggedTweets(label);
-	}
+//	@GetMapping("tags/{label}")
+//	public List<TweetDto> getTaggedTweets(@PathVariable String label)
+//	{
+//		return tweetService.getTaggedTweets(label);
+//	}
 	
 	@GetMapping("tweets")
 	public List<TweetDto> getAllTweets()
@@ -85,9 +86,12 @@ public class TweetController {
 		return tweetService.getAll();
 	}
 	
-	@PostMapping("tweets")
-	public TweetDto postTweet(@RequestBody String content, @RequestBody Credentials credentials,HttpServletResponse response)
+	@PostMapping
+	public TweetDto postTweet(@RequestBody TweetInfo info,HttpServletResponse response)
 	{
+		String content = info.content;
+		Credentials credentials = info.credentials;
+		
 		int id = userService.verifyUser(credentials.getUsername(), credentials.getPassword());
 		
 		if(id > 0 && userService.isActiveUser(userService.get(id)))
@@ -149,8 +153,11 @@ public class TweetController {
 	}
 	
 	@PostMapping("tweets/{id}/reply")
-	public TweetDto replyById(@RequestBody String content, @RequestBody Credentials credentials, @PathVariable Integer id, HttpServletResponse response)
+	public TweetDto replyById(@RequestBody TweetInfo info, @PathVariable Integer id, HttpServletResponse response)
 	{
+		String content = info.content;
+		Credentials credentials = info.credentials;
+		
 		int userId = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
 		
 		if(userId > 0 && !content.isEmpty())

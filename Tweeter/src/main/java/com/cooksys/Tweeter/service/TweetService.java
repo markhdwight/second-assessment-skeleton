@@ -80,7 +80,7 @@ public class TweetService {
 
 		List<Tweet> tweets = tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(username);
 		
-		for(TweeterUser u : userJpaRepo.findByUsername(username).get(0).getFollows())
+		for(TweeterUser u : userJpaRepo.findByUserName(username).get(0).getFollows())
 		{
 			tweets.addAll(tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(u.getUsername()));
 		}

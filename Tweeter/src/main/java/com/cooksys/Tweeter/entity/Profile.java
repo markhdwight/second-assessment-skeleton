@@ -14,6 +14,18 @@ public class Profile
 	String email;
 	
 	String phoneNum;
+	
+	public Profile()
+	{
+		
+	}
+
+	public Profile(String firstName, String lastName, String email, String phoneNum) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.phoneNum = phoneNum;
+	}
 
 	public String getFirstName() {
 		return firstName;

@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,11 +18,29 @@ public class TweeterUser {
 	@GeneratedValue
 	private Integer userId;
 	
-	@Embedded
-	private Credentials credentials;
+//	@Embedded
+//	private Credentials credentials;
+//	
+//	@Embedded
+//	private Profile profile;
 	
-	@Embedded
-	private Profile profile;
+	@Column(unique = true,nullable = false)
+	private String userName;
+	
+	@Column(nullable = false)
+	private String password;
+	
+	@Column(nullable = true)
+	private String firstName;
+	
+	@Column(nullable = true)
+	private String lastName;
+	
+	@Column(nullable = false)
+	private String email;
+	
+	@Column(nullable = true)
+	private String phoneNum;
 	
 	private Timestamp joined;
 	
@@ -40,8 +59,13 @@ public class TweeterUser {
 	
 	public TweeterUser(String username,Profile profile)
 	{
-		credentials.setUsername(username);
-		this.profile = profile;
+		//credentials.setUsername(username);
+		//this.profile = profile;
+		this.userName = username;
+		this.firstName = profile.getFirstName();
+		this.lastName = profile.getLastName();
+		this.email = profile.getEmail();
+		this.phoneNum = profile.getPhoneNum();
 		this.joined = new Timestamp(System.currentTimeMillis());
 		this.active = true;
 		follows = new ArrayList<TweeterUser>();
@@ -58,64 +82,84 @@ public class TweeterUser {
 		this.userId = userId;
 	}
 	
+	//@Column(name="username",unique = true,nullable = false)
 	public String getUsername() {
-		return credentials.getUsername();
+		//return credentials.getUsername();
+		return userName;
 	}
 	public void setUsername(String username) {
-		credentials.setUsername(username); 
-	}
-	public String getPassword() {
-		return credentials.getPassword();
-	}
-	public void setPassword(String password) {
-		credentials.setPassword(password);;
-	}
-	public Profile getProfile() {
-		return profile;
-	}
-	public void setProfile(Profile profile) {
-		this.profile = profile;
+		//credentials.setUsername(username); 
+		this.userName = username;
 	}
 	
+	//@Column(name="password",nullable = false)
+	public String getPassword() {
+		//return credentials.getPassword();
+		return password;
+	}
+	public void setPassword(String password) {
+		//credentials.setPassword(password);;
+		this.password = password;
+	}
+	public Profile getProfile() {
+		//return profile;
+		return new Profile(firstName,lastName,email,phoneNum);
+	}
+	public void setProfile(Profile profile) {
+		//this.profile = profile;
+	}
+	
+	//@Column(name="email")
 	public String getEmail()
 	{
-		return profile.getEmail();
+		//return profile.getEmail();
+		return email;
 	}
 	
 	public void setEmail(String email)
 	{
-		profile.setEmail(email);
+		//profile.setEmail(email);
+		this.email = email;
 	}
-	
+	//@Column(name="firstname")
 	public String getFirstName()
 	{
-		return profile.getFirstName();
+		//return profile.getFirstName();
+		return firstName;
 	}
 	
 	public void setFirstName(String firstName)
 	{
-		profile.setFirstName(firstName);
+		//profile.setFirstName(firstName);
+		this.firstName = firstName;
 	}
 	
+	//@Column(name="lastname")
 	public String getLastName()
 	{
-		return profile.getLastName();
+		//return profile.getLastName();
+		return lastName;
 	}
 	
 	public void setLastName(String lastName)
 	{
-		profile.setLastName(lastName);
+		//profile.setLastName(lastName);
+		this.lastName = lastName;
 	}
 	
+	//@Column(name="phonenum")
 	public String getPhoneNum()
 	{
-		return profile.getPhoneNum();
+		//return profile.getPhoneNum();
+		return phoneNum;
 	}
 	
 	public void setPhoneNum(String phoneNum)
 	{
-		profile.setPhoneNum(phoneNum);
+		//profile.setPhoneNum(phoneNum);
+		this.phoneNum = phoneNum;
 	}
+	
 	public Timestamp getJoined() {
 		return joined;
 	}

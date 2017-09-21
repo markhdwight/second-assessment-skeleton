@@ -8,5 +8,5 @@ import com.cooksys.Tweeter.entity.TweeterUser;
 
 public interface TweeterUserJpaRepository extends JpaRepository<TweeterUser, Integer> 
 {
-	List<TweeterUser> findByUsername(String username);
+	List<TweeterUser> findByUserName(String username);
 }

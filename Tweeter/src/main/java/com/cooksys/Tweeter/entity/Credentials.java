@@ -6,18 +6,18 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Credentials
 {
-	@Column(unique = true,nullable = false)
-	private String username;
+	//@Column(unique = true,nullable = false)
+	private String userName;
 	
-	@Column(nullable = false)
+	//@Column(nullable = false)
 	private String password;
 
 	public String getUsername() {
-		return username;
+		return userName;
 	}
 
 	public void setUsername(String username) {
-		this.username = username;
+		this.userName = username;
 	}
 
 	public String getPassword() {
@@ -30,6 +30,6 @@ public class Credentials
 
 	public boolean areComplete() {
 		// TODO Auto-generated method stub
-		return (!username.equals(null) & !password.equals(null));
+		return (!userName.equals(null) & !password.equals(null));
 	}	
 }

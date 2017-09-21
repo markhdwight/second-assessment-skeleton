@@ -59,10 +59,10 @@ public class TweeterUserService
 		return null;
 	}
 	
-	public TweeterUserDto create(TweeterUserDto user)
-	{
-		return userMapper.toDto(userRepo.create(userMapper.fromDto(user)));
-	}
+//	public TweeterUserDto create(TweeterUserDto user)
+//	{
+//		return userMapper.toDto(userRepo.create(userMapper.fromDto(user)));
+//	}
 
 	public boolean isActiveUser(TweeterUserDto u) {
 
@@ -102,7 +102,7 @@ public class TweeterUserService
 
 		TweeterUser user = new TweeterUser(credentials.getUsername(),profile);
 		user.setPassword(credentials.getPassword());
-		return null;
+		return userMapper.toDto(userRepo.create(user));
 	}
 
 	public TweeterUserDto activate(int id) 

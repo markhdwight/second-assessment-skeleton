@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -11,7 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @Entity
-public class Tweet implements Comparable{
+public class Tweet implements Comparable<Tweet>{
 
 	@Id
 	@GeneratedValue
@@ -19,13 +20,16 @@ public class Tweet implements Comparable{
 	
 	private String author;
 	
+	@Column(nullable = true)
 	private String content;
 	
 	private Timestamp timestamp;
 	
+	//@Column(nullable = true)
 	@OneToOne
 	private Tweet inReplyTo;
 	
+	//@Column(nullable = true)
 	@OneToOne
 	private Tweet repostOf;
 	
@@ -126,13 +130,8 @@ public class Tweet implements Comparable{
 		return true;
 	}
 	@Override
-	public int compareTo(Object other) {
+	public int compareTo(Tweet other) {
 
-		return compareTweets((Tweet)other);
-	}
-	
-	public int compareTweets(Tweet other)
-	{
 		return this.timestamp.compareTo(other.getTimestamp());
 	}
 

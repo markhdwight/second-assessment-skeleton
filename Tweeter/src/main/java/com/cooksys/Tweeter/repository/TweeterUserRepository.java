@@ -26,7 +26,7 @@ public class TweeterUserRepository {
 	
 	public List<TweeterUser> getAllUsers()
 	{
-		return entityManager.createQuery("FIND User",TweeterUser.class).getResultList();
+		return entityManager.createQuery("FROM TweeterUser",TweeterUser.class).getResultList();
 	}
 	
 	@Transactional
