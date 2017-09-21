@@ -58,11 +58,6 @@ public class TweeterUserService
 		}
 		return null;
 	}
-	
-//	public TweeterUserDto create(TweeterUserDto user)
-//	{
-//		return userMapper.toDto(userRepo.create(userMapper.fromDto(user)));
-//	}
 
 	public boolean isActiveUser(TweeterUserDto u) {
 
@@ -97,6 +92,16 @@ public class TweeterUserService
 		}
 		return -1;
 	}
+	
+	public Integer verifyDeactivatedUser(String username,String password)
+	{
+		for(TweeterUser u: userRepo.getAllUsers())
+		{
+			if(u.getUsername().equals(username) && u.getPassword().equals(password))
+				return u.getUserId();
+		}
+		return -1;
+	}
 
 	public TweeterUserDto create(Credentials credentials, Profile profile) {
 
@@ -107,14 +112,18 @@ public class TweeterUserService
 
 	public TweeterUserDto activate(int id) 
 	{
-		userMapper.toDto(userRepo.get(id)).setActive(true);
-		return userMapper.toDto(userRepo.get(id));
+		TweeterUser user = userRepo.get(id);
+		user.setActive(true);
+		userRepo.update(user);
+		return userMapper.toDto(user);
 	}
 	
 	public TweeterUserDto deactivate(int id)
 	{
-		userMapper.toDto(userRepo.get(id)).setActive(false);
-		return userMapper.toDto(userRepo.get(id));
+		TweeterUser user = userRepo.get(id);
+		user.setActive(false);
+		userRepo.update(user);
+		return userMapper.toDto(user);
 	}
 
 	public TweeterUserDto update(int id, Profile profile) {

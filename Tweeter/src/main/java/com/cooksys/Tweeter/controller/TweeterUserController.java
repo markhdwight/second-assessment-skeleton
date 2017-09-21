@@ -66,9 +66,9 @@ public class TweeterUserController
 		Credentials credentials = info.credentials;
 		Profile profile = info.profile;
 		
-		if(userService.exists(credentials.getUsername()))	//Check to see if the user exists already, and either exit or reactivate the user
+		if(!userService.isAvailable(credentials.getUsername()))	//Check to see if the username is available, and either exit or reactivate the user if it isn't
 		{
-			int id = userService.verifyUser(credentials.getUsername(),credentials.getPassword());
+			int id = userService.verifyDeactivatedUser(credentials.getUsername(),credentials.getPassword());
 			
 			if(id>0)
 			{
