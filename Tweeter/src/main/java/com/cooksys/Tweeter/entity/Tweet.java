@@ -34,7 +34,7 @@ public class Tweet implements Comparable<Tweet>{
 	private boolean active;
 	
 	@OneToMany
-	private List<TweeterUser> likes;// = new ArrayList<TweeterUser>();
+	private List<TweeterUser> likes;
 	
 	public Tweet()
 	{
@@ -130,7 +130,7 @@ public class Tweet implements Comparable<Tweet>{
 			return false;
 		return true;
 	}
-	@Override
+	@Override	//Implemented so that tweets can be sorted with Collections.sort(list) and Collections.reverse(list)
 	public int compareTo(Tweet other) {
 
 		return this.timestamp.compareTo(other.getTimestamp());

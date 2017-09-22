@@ -29,7 +29,7 @@ public class Credentials
 	}
 
 	public boolean areComplete() {
-		// TODO Auto-generated method stub
+
 		return (!userName.equals(null) & !password.equals(null));
 	}	
 }

@@ -1,7 +1,5 @@
 package com.cooksys.Tweeter.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -73,12 +71,6 @@ public class TweetController {
 	{
 		return tweetService.getMentions(username);
 	}
-	
-//	@GetMapping("tags/{label}")
-//	public List<TweetDto> getTaggedTweets(@PathVariable String label)
-//	{
-//		return tweetService.getTaggedTweets(label);
-//	}
 	
 	@GetMapping("tweets")
 	public List<TweetDto> getAllTweets()
