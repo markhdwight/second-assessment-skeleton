@@ -159,13 +159,49 @@ public class TweetService {
 
 	public List<TweetDto> getTaggedTweets(String label) {
 		
-		return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingAndActiveTrueOrderByTimestampDesc("#"+label));
+		//return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingAndActiveTrueOrderByTimestampDesc("#"+label));
+	
+		List<Tweet> mentions = new ArrayList<Tweet>();
+		String[] splitContents;
+		
+		for(Tweet t : tweetRepo.getAllTweets())
+		{
+			splitContents = t.getContent().split(" ");
+			for(String s : splitContents)
+			{
+				if(s.equals("#"+label))
+				{	
+					mentions.add(t);
+					break;
+				}
+					
+			}
+		}
+		
+		return tweetMapper.toDtos(mentions);
 	}
 
 	public List<TweetDto> getMentions(String username) {
 		
-		return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingAndActiveTrueOrderByTimestampDesc("@"+username));
+		//return tweetMapper.toDtos(tweetJpaRepo.findByContentContainingAndActiveTrueOrderByTimestampDesc("@"+username));
+		List<Tweet> mentions = new ArrayList<Tweet>();
+		String[] splitContents;
 		
+		for(Tweet t : tweetRepo.getAllTweets())
+		{
+			splitContents = t.getContent().split(" ");
+			for(String s : splitContents)
+			{
+				if(s.equals("@"+username))
+				{	
+					mentions.add(t);
+					break;
+				}
+					
+			}
+		}
+		
+		return tweetMapper.toDtos(mentions);
 	}
 
 	public TweetDto create(String content, String username) {

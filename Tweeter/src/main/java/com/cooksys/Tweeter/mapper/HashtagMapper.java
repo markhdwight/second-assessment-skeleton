@@ -1,5 +1,7 @@
 package com.cooksys.Tweeter.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 
 import com.cooksys.Tweeter.dto.HashtagDto;
@@ -11,5 +13,7 @@ public interface HashtagMapper {
 	public Hashtag fromDto(HashtagDto dto);
 	
 	public HashtagDto toDto(Hashtag hashtag);
+
+	public List<HashtagDto> toDtos(List<Hashtag> tagsFinal);
 
 }

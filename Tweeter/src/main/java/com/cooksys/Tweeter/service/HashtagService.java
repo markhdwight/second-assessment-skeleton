@@ -65,15 +65,22 @@ public class HashtagService {
 
 	public List<HashtagDto> getTagsIn(Integer id) {
 
-		List<HashtagDto> tagsFinal = new ArrayList<HashtagDto>();
+		List<Hashtag> tagsFinal = new ArrayList<Hashtag>();
 		List<Hashtag> tagsRaw = tweetRepo.get(id).getHashTags();
+		List<Hashtag> masterTagList = hashtagRepo.getAllHashtags();
 		
 		for(Hashtag h : tagsRaw)
 		{
-			Hashtag hPrime = hashtagJpaRepo.findByLabel(h.getLabel()).get(0);
-			tagsFinal.add(hashtagMapper.toDto(hPrime));
+			//Hashtag hPrime = hashtagJpaRepo.findByLabel(h.getLabel()).get(0);
+			//tagsFinal.add(hashtagMapper.toDto(hPrime));
+			
+			for(Hashtag m : masterTagList)
+			{
+				if(h.getLabel().equals(m.getLabel()))
+					tagsFinal.add(h);
+			}
 		}
 		
-		return tagsFinal;
+		return hashtagMapper.toDtos(tagsFinal);
 	}
 }
