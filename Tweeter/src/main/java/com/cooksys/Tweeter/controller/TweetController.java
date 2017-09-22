@@ -196,11 +196,17 @@ public class TweetController {
 	}
 	
 	@GetMapping("tweets/{id}/context")
-	public TweetContext getContextOf(@PathVariable Integer id)
+	public TweetContext getContextOf(@PathVariable Integer id, HttpServletResponse response)
 	{
-		TweetContext context = tweetService.getContext(id);
+		if(tweetService.exists(id))
+		{
+			TweetContext context = tweetService.getContext(id);
+			response.setStatus(HttpServletResponse.SC_FOUND);
+			return context;
+		}
 		
-		return context;
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		return null;
 	}
 	
 	@GetMapping("tweets/{id}/replies")

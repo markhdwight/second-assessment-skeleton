@@ -143,6 +143,9 @@ public class TweetService {
 
 	public boolean areParentChild(Tweet parent, Tweet child) {
 		
+		if(parent == null || child == null || child.getInReplyTo() == null)
+			return false;
+		
 		if(child.getInReplyTo().equals(parent))
 			return true;
 		return false;
@@ -370,7 +373,7 @@ public class TweetService {
 		Tweet origin = tweetRepo.get(id);
 		
 		before = getParentTweets(origin,allTweets.subList(0,allTweets.indexOf(origin)));
-		after = getChildTweets(origin,allTweets.subList(allTweets.indexOf(origin),allTweets.size()));
+		after = getChildTweets(origin,allTweets.subList(allTweets.indexOf(origin)+1,allTweets.size()));
 		
 		TweetContext context = new TweetContext(tweetMapper.toDto(origin));
 		context.setBefore(tweetMapper.toDtos(before));
@@ -383,7 +386,7 @@ public class TweetService {
 	{
 		List<Tweet> list = new ArrayList<Tweet>();
 		
-		if(listSegment.size() == 0)
+		if(listSegment.size() < 1)
 			return list;
 		
 		Tweet newStart = listSegment.get(0);
@@ -393,7 +396,8 @@ public class TweetService {
 			if(areParentChild(listSegment.get(i),start))
 			{
 				newStart = listSegment.get(i);
-				list.add(newStart);
+				if(newStart.isActive())
+					list.add(newStart);
 				break;	
 			}
 		}
@@ -409,7 +413,7 @@ public class TweetService {
 	{	
 		List<Tweet> list = new ArrayList<Tweet>();
 		
-		if(listSegment.size() == 0)
+		if(listSegment.size() < 1)
 			return list;
 		
 		Tweet newStart = listSegment.get(listSegment.size()-1);
@@ -419,7 +423,8 @@ public class TweetService {
 			if(areParentChild(start,t));
 			{
 				newStart = t;
-				list.add(newStart);
+				if(newStart.isActive())
+					list.add(newStart);
 				break;
 			}
 		}
