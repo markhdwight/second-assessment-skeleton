@@ -19,6 +19,7 @@ import com.cooksys.Tweeter.dto.TweetDto;
 import com.cooksys.Tweeter.dto.TweeterUserDto;
 import com.cooksys.Tweeter.entity.Hashtag;
 import com.cooksys.Tweeter.entity.Tweet;
+import com.cooksys.Tweeter.entity.TweetContext;
 import com.cooksys.Tweeter.entity.TweeterUser;
 
 @Service
@@ -77,22 +78,47 @@ public class TweetService {
 	
 	public List<TweetDto> getTweetsBy(String username) {
 
-		return tweetMapper.toDtos(tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(username));
-	}
+		//return tweetMapper.toDtos(tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(username));
 	
-	public List<TweetDto> getFeedFor(String username) {
-
-		List<Tweet> tweets = tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(username);
+		TweeterUser user = getEntity(username);
+		List<Tweet> tweets = new ArrayList<Tweet>();
 		
-		for(TweeterUser u : userJpaRepo.findByUserName(username).get(0).getFollows())
+		for(Tweet t : tweetRepo.getAllTweets())
 		{
-			tweets.addAll(tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(u.getUsername()));
+			if(t.getAuthor().equals(user.getUsername()))
+				tweets.add(t);
 		}
 		
 		Collections.sort(tweets);
 		Collections.reverse(tweets);
 		
 		return tweetMapper.toDtos(tweets);
+		
+	}
+	
+	public List<TweetDto> getFeedFor(String username) {
+
+		//List<Tweet> tweets = tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(username);
+		TweeterUser user = getEntity(username);
+		List<Tweet> allTweets = tweetRepo.getAllTweets();
+		List<Tweet> feed = new ArrayList<Tweet>();
+		
+		for(TweeterUser u : user.getFollows())	//userJpaRepo.findByUserName(username).get(0).getFollows()
+		{
+			for(Tweet t : allTweets)
+			{
+				if(t.getAuthor().equals(u.getUsername()))
+					feed.add(t);	//addAll(tweetJpaRepo.findByAuthorIsAndActiveTrueOrderByTimestampDesc(u.getUsername()))
+				else if(t.getAuthor().equals(user.getUsername()))
+					feed.add(t);
+			}
+			
+		}
+		
+		Collections.sort(feed);
+		Collections.reverse(feed);
+		
+		return tweetMapper.toDtos(feed);
 	}
 	
 	public TweetDto get(Integer id)
@@ -115,6 +141,13 @@ public class TweetService {
 		return tweetMapper.toDto(tweetRepo.create(tweetMapper.fromDto(tweet)));
 	}
 
+	public boolean areParentChild(Tweet parent, Tweet child) {
+		
+		if(child.getInReplyTo().equals(parent))
+			return true;
+		return false;
+	}
+	
 	public boolean areParentChild(TweetDto parentDto, TweetDto childDto) {
 		
 		Tweet parent = tweetMapper.fromDto(parentDto);
@@ -272,6 +305,92 @@ public class TweetService {
 		TweeterUser dude = userRepo.get(userId);
 		
 		tweet.likedBy(dude);
+		tweetRepo.update(tweet);
+	}
+	
+	private TweeterUser getEntity(String username)
+	{
+		for(TweeterUser u : userRepo.getAllUsers())
+		{
+			if(u.getUsername().equals(username))
+			{
+				if(u.isActive())
+					return u;
+				else return null;
+			}
+		}
+		return null;
+	}
+
+	public TweetContext getContext(Integer id) {	//TODO MAYBE
+
+		if(!exists(id))
+			return null;
+		
+		List<Tweet> allTweets = tweetRepo.getAllTweets();
+		Collections.sort(allTweets);
+		List<Tweet> before = new ArrayList<Tweet>();
+		List<Tweet> after = new ArrayList<Tweet>();
+		Tweet origin = tweetRepo.get(id);
+		
+		before = getParentTweets(origin,allTweets.subList(0,allTweets.indexOf(origin)));
+		after = getChildTweets(origin,allTweets.subList(allTweets.indexOf(origin),allTweets.size()));
+		
+		TweetContext context = new TweetContext(tweetMapper.toDto(origin));
+		context.setBefore(tweetMapper.toDtos(before));
+		context.setAfter(tweetMapper.toDtos(after));
+		
+		return context;
+	}
+	
+	private List<Tweet> getParentTweets(Tweet start,List<Tweet> listSegment)
+	{
+		List<Tweet> list = new ArrayList<Tweet>();
+		
+		if(listSegment.size() == 0)
+			return list;
+		
+		Tweet newStart = listSegment.get(0);
+		
+		for(int i = listSegment.size()-1; i>=0; i--)
+		{
+			if(areParentChild(listSegment.get(i),start))
+			{
+				newStart = listSegment.get(i);
+				list.add(newStart);
+				break;	
+			}
+		}
+		
+		List<Tweet> head = getParentTweets(newStart,listSegment.subList(0, listSegment.indexOf(newStart)-1));
+		
+		head.addAll(list);
+		
+		return head;
+	}
+	
+	private List<Tweet> getChildTweets(Tweet start,List<Tweet> listSegment)
+	{	
+		List<Tweet> list = new ArrayList<Tweet>();
+		
+		if(listSegment.size() == 0)
+			return list;
+		
+		Tweet newStart = listSegment.get(listSegment.size()-1);
+		
+		for(Tweet t: listSegment)
+		{
+			if(areParentChild(start,t));
+			{
+				newStart = t;
+				list.add(newStart);
+				break;
+			}
+		}
+		
+		list.addAll(getChildTweets(newStart,listSegment.subList(listSegment.indexOf(newStart)+1, listSegment.size())));
+		
+		return list;
 	}
 
 }

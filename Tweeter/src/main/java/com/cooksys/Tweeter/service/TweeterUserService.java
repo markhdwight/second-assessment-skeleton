@@ -179,8 +179,8 @@ public class TweeterUserService
 		a.unfollow(b);
 		b.removeFollower(a);
 		
-//		userRepo.update(a);
-//		userRepo.update(b);
+		userRepo.update(a);
+		userRepo.update(b);
 	}
 
 	public List<TweeterUserDto> getFollowers(String username) {

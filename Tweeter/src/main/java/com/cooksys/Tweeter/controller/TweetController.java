@@ -198,67 +198,9 @@ public class TweetController {
 	@GetMapping("tweets/{id}/context")
 	public TweetContext getContextOf(@PathVariable Integer id)
 	{
-		TweetDto start = tweetService.get(id);
-		TweetContext context = new TweetContext(start);
-		List<TweetDto> before = new ArrayList<TweetDto>();
-		List<TweetDto> after = new ArrayList<TweetDto>();
+		TweetContext context = tweetService.getContext(id);
 		
-		List<TweetDto> tweetList = tweetService.getAllChronological();
-		before = getParentTweets(start,tweetList.subList(0,tweetList.indexOf(start)));
-		after = getChildTweets(start,tweetList.subList(tweetList.indexOf(start),tweetList.size()));
-		
-		context.setBefore(before);
-		context.setAfter(after);
-
 		return context;
-	}
-	
-	private List<TweetDto> getParentTweets(TweetDto start,List<TweetDto> listSegment)
-	{
-		List<TweetDto> list = new ArrayList<TweetDto>();
-		TweetDto newStart = listSegment.get(0);
-		
-		if(listSegment.size() == 0)
-			return list;
-		
-		for(int i = listSegment.size()-1; i>=0; i--)
-		{
-			if(tweetService.areParentChild(listSegment.get(i),start))
-			{
-				newStart = listSegment.get(i);
-				list.add(newStart);
-				break;	
-			}
-		}
-		
-		List<TweetDto> head = getParentTweets(newStart,listSegment.subList(0, listSegment.indexOf(newStart)-1));
-		
-		head.addAll(list);
-		
-		return head;
-	}
-	
-	private List<TweetDto> getChildTweets(TweetDto start,List<TweetDto> listSegment)
-	{	
-		List<TweetDto> list = new ArrayList<TweetDto>();
-		TweetDto newStart = listSegment.get(listSegment.size()-1);
-		
-		if(listSegment.size() == 0)
-			return list;
-		
-		for(TweetDto t: listSegment)
-		{
-			if(tweetService.areParentChild(start,t));
-			{
-				newStart = t;
-				list.add(newStart);
-				break;
-			}
-		}
-		
-		list.addAll(getChildTweets(newStart,listSegment.subList(listSegment.indexOf(newStart)+1, listSegment.size())));
-		
-		return list;
 	}
 	
 	@GetMapping("tweets/{id}/replies")
